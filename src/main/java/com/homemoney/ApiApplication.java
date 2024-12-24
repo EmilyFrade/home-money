@@ -1,4 +1,4 @@
-package com.homemoney.api;
+package com.homemoney;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

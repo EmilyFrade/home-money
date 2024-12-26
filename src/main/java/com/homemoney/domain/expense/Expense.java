@@ -28,15 +28,6 @@ public class Expense {
 
     private String paymentMethod;
 
-    public Expense(BigDecimal value, String category, Date expirationDate, Date paymentDate, String description, String paymentMethod) {
-        this.value = value;
-        this.category = category;
-        this.expirationDate = expirationDate;
-        this.paymentDate = paymentDate;
-        this.description = description;
-        this.paymentMethod = paymentMethod;
-    }
-
     public UUID getId() {
         return id;
     }

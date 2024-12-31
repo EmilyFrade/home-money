@@ -64,7 +64,7 @@ public class Expense {
         Crédito, 
         Débito,
         Dinheiro,
-        PIX, 
+        Pix, 
         Outro; 
     }
 
@@ -72,9 +72,5 @@ public class Expense {
         Pendente, 
         Paga, 
         Vencida;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 }

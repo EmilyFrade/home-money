@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Despesas</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Lista de despesas</h3>
+            <a class="btn btn-primary" th:href="@{/expense/create}">Cadastrar nova despesa</a>
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Valor</th>
+                    <th>Categoria</th>
+                    <th>Descrição</th>
+                    <th>Data de Vencimento</th>
+                    <th>Data de Pagamento</th>
+                    <th>Forma de Pagamento</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="expense : ${expenses}">
+                    <td th:text="${expense.value}"></td>
+                    <td th:text="${expense.category}"></td>
+                    <td th:text="${expense.description}"></td>
+                    <td th:text="${T(com.homemoney.utils.DateUtils).formatToBrazilianDate(expense.expirationDate)}"></td>
+                    <td th:text="${T(com.homemoney.utils.DateUtils).formatToBrazilianDate(expense.paymentDate)}"></td>
+                    <td th:text="${expense.paymentMethod}"></td>
+                    <td th:text="${expense.status}"></td>
+                    <td>
+                        <a class="btn btn-warning btn-sm" th:href="@{/expense/edit/{id}(id=${expense.id})}">Editar</a>
+                        <a class="btn btn-danger btn-sm" th:href="@{/expense/delete/{id}(id=${expense.id})}">Deletar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

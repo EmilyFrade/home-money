@@ -8,8 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping("/expense")
@@ -35,9 +35,10 @@ public class ExpenseController {
         return "expense/form";
     }
 
-    @PostMapping
-    public String saveExpense(@ModelAttribute Expense expense) {
-        expenseService.save(expense);
+    @PostMapping("/{id}")
+    public String saveExpense(@PathVariable Long id, @ModelAttribute Expense expense) {
+        expense.setId(id); 
+        expenseService.save(expense); 
 
         return "redirect:/expense";
     }
@@ -48,17 +49,8 @@ public class ExpenseController {
         model.addAttribute("expense", expense);
         model.addAttribute("categories", Expense.Category.values());
         model.addAttribute("paymentMethods", Expense.PaymentMethod.values());
-        model.addAttribute("currentDate", LocalDate.now());
 
         return "expense/form";
-    }
-
-    @PostMapping("/edit/{id}")
-    public String updateExpense(@PathVariable Long id, @ModelAttribute Expense expense) {
-        expense.setId(id); 
-        expenseService.save(expense); 
-
-        return "redirect:/expense";
     }
 
     @GetMapping("/delete/{id}")

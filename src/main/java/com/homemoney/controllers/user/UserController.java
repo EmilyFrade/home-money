@@ -67,6 +67,6 @@ public class UserController {
     @PostMapping("/edit/{id}")
     public String editUser(@PathVariable Long id, @ModelAttribute User user, HttpServletRequest request) {
         userService.update(id, user); 
-        return "redirect:/"; 
+        return "redirect:/user"; 
     }
 }

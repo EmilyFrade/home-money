@@ -20,6 +20,15 @@
 <!-- Menu Lateral -->
 <div class="position-fixed" style="top: 50px; bottom: 0; left: 0; width: 230px; padding-top: 20px; background-color: #284703; z-index: 90; color: white;">
     <ul class="nav flex-column">
+        <li class="nav-item">
+            <a href="#" class="nav-link text-white" th:href="@{/user}">
+                <i class="bi bi-person me-2"></i>
+                <strong>Perfil</strong>
+            </a>
+        </li>
+
+        <hr class="border-light">
+
         <!-- Seção Despesas -->
         <li class="nav-item">
             <a href="#" class="nav-link text-white">
@@ -37,30 +46,6 @@
                     <a href="#" class="nav-link text-white" th:href="@{/expense/create}">
                         <i class="bi bi-plus-circle me-2"></i>
                         Cadastrar nova despesa
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <hr class="border-light">
-
-        <!-- Seção Usuários -->
-        <li class="nav-item">
-            <a href="#" class="nav-link text-white">
-                <i class="bi bi-person me-2"></i>
-                <strong>Usuários</strong>
-            </a>
-            <ul class="nav flex-column ms-3">
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white" th:href="@{/user}">
-                        <i class="bi bi-card-list me-2"></i>
-                        Usuários cadastrados
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white" th:href="@{/user/create}">
-                        <i class="bi bi-plus-circle me-2"></i>
-                        Cadastrar novo usuário
                     </a>
                 </li>
             </ul>

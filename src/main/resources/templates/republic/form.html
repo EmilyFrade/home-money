@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de República</title>
+    <!-- Link para o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col min-h-screen">
+
+<div th:replace="~{menu.html}"></div> <!-- Menu lateral -->
+
+<!-- Conteúdo principal -->
+<div class="container mx-auto px-6 py-8" style="margin-left: 250px;">
+    <h3 class="text-2xl font-semibold mb-6">Cadastro de República</h3>
+    <form th:action="@{${republica.id} != null ? '/republic/edit/' + ${republica.id} : '/republic/create'}" th:object="${republica}" method="post">
+
+        <!-- Campo Nome -->
+        <div class="mb-4">
+            <label for="nome" class="block text-sm font-medium text-gray-700">Nome da República:</label>
+            <input type="text" class="mt-1 p-2 border border-gray-300 rounded-md w-full" th:field="*{nome}" required />
+        </div>
+
+        <!-- Campo Endereço -->
+        <h3 class="text-xl font-semibold mb-4">Cadastro de Endereço</h3>
+
+        <!-- Linha para Logradouro, Número e CEP -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <div class="col-span-1">
+                <label for="logradouro" class="block text-sm font-medium text-gray-700">Logradouro:</label>
+                <input type="text" class="mt-1 p-2 border border-gray-300 rounded-md w-full" id="logradouro" placeholder="Rua, Av, etc." required>
+            </div>
+            <div class="col-span-1">
+                <label for="numero" class="block text-sm font-medium text-gray-700">Número:</label>
+                <input type="number" class="mt-1 p-2 border border-gray-300 rounded-md w-full" id="numero" placeholder="Número" required>
+            </div>
+            <div class="col-span-1">
+                <label for="cep" class="block text-sm font-medium text-gray-700">CEP:</label>
+                <input type="text" class="mt-1 p-2 border border-gray-300 rounded-md w-full" id="cep" placeholder="CEP" required>
+            </div>
+        </div>
+
+        <!-- Linha para Bairro, Cidade e Estado -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="col-span-1">
+                <label for="bairro" class="block text-sm font-medium text-gray-700">Bairro:</label>
+                <input type="text" class="mt-1 p-2 border border-gray-300 rounded-md w-full" id="bairro" placeholder="Bairro" required>
+            </div>
+            <div class="col-span-1">
+                <label for="cidade" class="block text-sm font-medium text-gray-700">Cidade:</label>
+                <input type="text" class="mt-1 p-2 border border-gray-300 rounded-md w-full" id="cidade" placeholder="Cidade" required>
+            </div>
+            <div class="col-span-1">
+                <label for="estado" class="block text-sm font-medium text-gray-700">Estado:</label>
+                <select class="mt-1 p-2 border border-gray-300 rounded-md w-full" id="estado" required>
+                    <option value="" selected>Selecione o Estado</option>
+                    <option value="SP">São Paulo</option>
+                    <option value="RJ">Rio de Janeiro</option>
+                    <option value="MG">Minas Gerais</option>
+                    <option value="BA">Bahia</option>
+                    <option value="RS">Rio Grande do Sul</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Campo Número de Quartos -->
+        <div class="mb-4">
+            <label for="numeroDeQuartos" class="block text-sm font-medium text-gray-700">Número de Quartos:</label>
+            <input type="number" class="mt-1 p-2 border border-gray-300 rounded-md w-full" th:field="*{numeroDeQuartos}" required />
+        </div>
+
+        <!-- Campo Capacidade Máxima -->
+        <div class="mb-4">
+            <label for="capacidadeMaxima" class="block text-sm font-medium text-gray-700">Capacidade Máxima:</label>
+            <input type="number" class="mt-1 p-2 border border-gray-300 rounded-md w-full" th:field="*{capacidadeMaxima}" required />
+        </div>
+
+        <!-- Campo Valor do Aluguel -->
+        <div class="mb-4">
+            <label for="valorAluguel" class="block text-sm font-medium text-gray-700">Valor do Aluguel:</label>
+            <input type="number" class="mt-1 p-2 border border-gray-300 rounded-md w-full" th:field="*{valorAluguel}" required />
+        </div>
+
+        <!-- Campo Ativa -->
+        <div class="mb-4">
+            <label for="ativa" class="block text-sm font-medium text-gray-700">República Ativa:</label>
+            <select class="mt-1 p-2 border border-gray-300 rounded-md w-full" th:field="*{ativa}">
+                <option value="true">Sim</option>
+                <option value="false">Não</option>
+            </select>
+        </div>
+
+        <!-- Botão Salvar -->
+        <button type="submit" class="w-full bg-green-500 text-white p-3 rounded-md hover:bg-green-600 transition duration-300">Salvar</button>
+    </form>
+</div>
+
+</body>
+</html>

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpenseService {
@@ -48,5 +50,20 @@ public class ExpenseService {
         } 
         
         expense.setStatus(Expense.Status.Pendente);
+    }
+
+    public double calculateTotalExpenses() {
+        return expenseRepository.findAll().stream()
+                .map(expense -> expense.getValue().doubleValue())
+                .mapToDouble(Double::doubleValue)
+                .sum();
+    }
+
+    public Map<String, Double> calculateExpensesByCategory() {
+        return expenseRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                    expense -> expense.getCategory().toString(),
+                    Collectors.summingDouble(expense -> expense.getValue().doubleValue())
+                ));
     }
 }

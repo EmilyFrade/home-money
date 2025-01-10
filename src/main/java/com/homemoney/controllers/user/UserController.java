@@ -16,7 +16,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Exibe a lista de usuários
     @GetMapping
     public String listUsers(Model model) {
         model.addAttribute("users", userService.findAll());

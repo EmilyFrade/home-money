@@ -3,18 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu</title>
-    <!-- Link para o Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body class="d-flex flex-column" style="height: 100vh;">
+    <style>
+        .barra-superior {
+            background-color: #434d36;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1100;
+        }
 
-<!-- Barra de navegação -->
-<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #284703; z-index: 100;">
-    <div class="container-fluid d-flex justify-content-center align-items-center">
-        <span class="navbar-brand mb-0 h1 text-white fw-bold text-uppercase" style="font-size: 2rem;">Home Money</span>
+        .barra-superior h1 {
+            margin: 0;
+        }
+
+        .menu-toggle {
+            cursor: pointer;
+            color: white;
+            padding-top: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 21px;
+        }
+
+        .menu-toggle i {
+            font-size: 1.5rem;
+        }
+
+        .menu-toggle h3 {
+            margin: 0;
+        }
+
+        /* Menu lateral */
+        .menu-lateral {
+            width: 70px;
+            background-color: #434d36;
+            color: #adb5bd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            transition: width 0.3s ease;
+            overflow: hidden;
+            position: fixed;
+            top: 50px;
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .menu-lateral.expanded {
+            width: 230px;
+        }
+
+        .menu-lateral a {
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            padding: 15px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .menu-lateral a:hover {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .menu-lateral .icon {
+            font-size: 1.5rem;
+            margin-right: 0;
+        }
+
+        .menu-lateral.expanded .icon {
+            margin-right: 10px;
+        }
+
+        .menu-lateral .text {
+            flex-grow: 1;
+            opacity: 0;
+            white-space: nowrap;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-lateral.expanded .text {
+            opacity: 1;
+        }
+
+        .content {
+            padding: 20px;
+            background-color: #f8f9fa;
+            margin-left: 70px;
+            margin-top: 70px;
+            transition: margin-left 0.3s ease;
+            z-index: 1;
+        }
+
+        .menu-lateral a {
+            justify-content: flex-start;
+            padding-left: 20px;
+        }
+
+        .menu-lateral.expanded a {
+            justify-content: flex-start;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="barra-superior">
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <i class="bi bi-list"></i>
+        <h3>Home Money</h3>
     </div>
+</div>
+
+<div class="menu-lateral" id="menuLateral">
+
+    <a href="#" th:href="@{/expense}">
+        <i class="bi bi-card-list icon"></i>
+        <span class="text">Despesas cadastradas</span>
+    </a>
+    <a href="#" th:href="@{/expense/create}">
+        <i class="bi bi-plus-circle icon"></i>
+        <span class="text">Nova despesa</span>
+    </a>
+    <a href="#" th:href="@{/user}">
+        <i class="bi bi-person icon"></i>
+        <span class="text">Lista de usuários</span>
+    </a>
+    <a href="#" th:href="@{/user/create}">
+        <i class="bi bi-person-plus icon"></i>
+        <span class="text">Cadastrar usuário</span>
+    </a>
+    <a href="#" th:href="@{/residence/create}">
+        <i class="bi bi-house-add icon"></i>
+        <span class="text">Minha república</span>
+    </a>
+</div>
+
+<div class="content" id="content">
+
 </nav>
 
 <!-- Menu Lateral -->
@@ -53,6 +192,20 @@
     </ul>
 </div>
 
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById('menuLateral');
+        const content = document.getElementById('content');
+
+        menu.classList.toggle('expanded');
+
+        if(menu.classList.contains('expanded')) {
+            content.style.marginLeft = '230px';
+        } else {
+            content.style.marginLeft = '70px';
+        }
+    }
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

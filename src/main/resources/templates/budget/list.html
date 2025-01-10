@@ -24,6 +24,7 @@
                 <th>Categoria</th>
                 <th>Data de Início</th>
                 <th>Data de Fim</th>
+                <th>Status</th>
                 <th>Ações</th>
             </tr>
             </thead>
@@ -33,6 +34,7 @@
                 <td th:text="${budget.category}"></td>
                 <td th:text="${T(com.homemoney.utils.DateUtils).formatToBrazilianDate(budget.startDate)}"></td>
                 <td th:text="${T(com.homemoney.utils.DateUtils).formatToBrazilianDate(budget.endDate)}"></td>
+                <td th:text="${budget.status}"></td>
                 <td>
                     <a class="btn btn-warning btn-sm" th:href="@{/budget/edit/{id}(id=${budget.id})}">Editar</a>
                     <a class="btn btn-danger btn-sm" th:href="@{/budget/delete/{id}(id=${budget.id})}">Deletar</a>

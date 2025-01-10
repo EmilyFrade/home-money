@@ -21,7 +21,7 @@ public class Budget {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;  // O JPA irá gerenciar este ID automaticamente
+    private Long id;  
 
     @NotNull
     @DecimalMin("0.01")
@@ -36,6 +36,9 @@ public class Budget {
     @Enumerated(EnumType.STRING)
     private Category category;
 
+    @Enumerated(EnumType.STRING)
+    private Status status; 
+
     public enum Category {
         Alimentação, 
         Casa,
@@ -43,5 +46,19 @@ public class Budget {
         Saúde, 
         Transporte,
         Outro; 
+    }
+
+    public enum Status {
+        Ativo, 
+        Inativo;
+    }
+
+    public void setStatusBasedOnDate() {
+        LocalDate currentDate = LocalDate.now();
+        if (startDate != null && endDate != null) {
+            status = (currentDate.isAfter(startDate) && currentDate.isBefore(endDate)) ? Status.Ativo : Status.Inativo;
+        } else {
+            status = Status.Inativo;
+        }
     }
 }

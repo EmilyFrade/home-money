@@ -22,10 +22,11 @@ public class BudgetService {
     }
 
     public void save(Budget budget) {
+        budget.setStatusBasedOnDate();
         budgetRepository.save(budget);
     }
 
     public void delete(Long id) {
         budgetRepository.deleteById(id);
-    }
+    } 
 }

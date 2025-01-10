@@ -130,6 +130,10 @@
 
 <div class="menu-lateral" id="menuLateral">
 
+    <a href="#" th:href="@{/user}">
+        <i class="bi bi-person icon"></i>
+        <span class="text">Perfil</span>
+    </a>
     <a href="#" th:href="@{/expense}">
         <i class="bi bi-card-list icon"></i>
         <span class="text">Despesas cadastradas</span>
@@ -137,14 +141,6 @@
     <a href="#" th:href="@{/expense/create}">
         <i class="bi bi-plus-circle icon"></i>
         <span class="text">Nova despesa</span>
-    </a>
-    <a href="#" th:href="@{/user}">
-        <i class="bi bi-person icon"></i>
-        <span class="text">Lista de usuários</span>
-    </a>
-    <a href="#" th:href="@{/user/create}">
-        <i class="bi bi-person-plus icon"></i>
-        <span class="text">Cadastrar usuário</span>
     </a>
     <a href="#" th:href="@{/residence/create}">
         <i class="bi bi-house-add icon"></i>
@@ -154,42 +150,6 @@
 
 <div class="content" id="content">
 
-</nav>
-
-<!-- Menu Lateral -->
-<div class="position-fixed" style="top: 50px; bottom: 0; left: 0; width: 230px; padding-top: 20px; background-color: #284703; z-index: 90; color: white;">
-    <ul class="nav flex-column">
-        <li class="nav-item">
-            <a href="#" class="nav-link text-white" th:href="@{/user}">
-                <i class="bi bi-person me-2"></i>
-                <strong>Perfil</strong>
-            </a>
-        </li>
-
-        <hr class="border-light">
-
-        <!-- Seção Despesas -->
-        <li class="nav-item">
-            <a href="#" class="nav-link text-white">
-                <i class="bi bi-credit-card me-2"></i>
-                <strong>Despesas</strong>
-            </a>
-            <ul class="nav flex-column ms-3">
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white" th:href="@{/expense}">
-                        <i class="bi bi-card-list me-2"></i>
-                        Despesas cadastradas
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white" th:href="@{/expense/create}">
-                        <i class="bi bi-plus-circle me-2"></i>
-                        Cadastrar nova despesa
-                    </a>
-                </li>
-            </ul>
-        </li>
-    </ul>
 </div>
 
 <script>

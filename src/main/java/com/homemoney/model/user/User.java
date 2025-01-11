@@ -1,5 +1,6 @@
 package com.homemoney.model.user;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,10 +26,10 @@ public class User {
     @NotNull
     @Email
     @Size(max = 255)
-    private String email;
+    @Column(unique = true)
+    private String username;
 
     @NotNull
-    @Size(min = 8, max = 20)
     private String password;
 
     @Size(max = 255)

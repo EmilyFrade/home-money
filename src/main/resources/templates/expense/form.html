@@ -34,7 +34,7 @@
 <!-- Conteúdo principal -->
 <div class="container-fluid" style="margin-left: 250px; margin-top: 0; padding-left: 20px; padding-right: 20px;">
     <h3 class="pt-3">Cadastro de despesa</h3>
-    <form th:action="@{${expense.id} != null ? '/expense/edit/' + ${expense.id} : '/expense'}" th:object="${expense}" method="post">
+    <form th:action="@{'/expense/' + ${expense.id}}" th:object="${expense}" method="post">
 
         <!-- Campo Valor -->
         <div class=" pt-3 mb-3">

@@ -1,6 +1,8 @@
 package com.homemoney.controllers.user;
 
+import com.homemoney.model.residence.Residence;
 import com.homemoney.model.user.User;
+import com.homemoney.services.residence.ResidenceService;
 import com.homemoney.services.user.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +21,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ResidenceService residenceService;
+
     // Exibe tela de perfil do usuário
     @GetMapping
     public String showProfile(Authentication authentication, Model model) {
@@ -26,7 +31,11 @@ public class UserController {
         Optional<User> user = userService.findByUsername(username); 
 
         if (user.isPresent()) {
+            Residence residence = residenceService.findById(user.get().getResidence().getId());
+
             model.addAttribute("user", user.get());  
+            model.addAttribute("residence", residence);
+            
             return "user/profile"; 
         }
 

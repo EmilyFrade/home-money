@@ -2,11 +2,14 @@ package com.homemoney.controllers.user;
 
 import com.homemoney.model.user.User;
 import com.homemoney.services.user.UserService;
-import jakarta.validation.Valid;
+
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -16,57 +19,54 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Exibe a lista de usuários
+    // Exibe tela de perfil do usuário
     @GetMapping
-    public String listUsers(Model model) {
-        model.addAttribute("users", userService.findAll());
-        return "user/list";
+    public String showProfile(Authentication authentication, Model model) {
+        String username = authentication.getName(); 
+        Optional<User> user = userService.findByUsername(username); 
+
+        if (user.isPresent()) {
+            model.addAttribute("user", user.get());  
+            return "user/profile"; 
+        }
+
+        return "redirect:/login";
     }
 
     // Exibe o formulário de cadastro de usuário
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("user", new User());
-        return "user/form";
+        return "user/createForm";
     }
 
-    // Salva o usuário após a validação do formulário
-    @PostMapping
-    public String saveUser(@Valid @ModelAttribute User user, BindingResult result) {
-        if (result.hasErrors()) {
-            return "user/form";
-        }
+    // Salva o usuário 
+    @PostMapping("/create/{id}")
+    public String createUser(@PathVariable Long id, @ModelAttribute User user, HttpServletRequest request) {
+        user.setId(id);
+        userService.saveAndAuthenticate(user, request);
 
-        userService.save(user);
-        return "redirect:/user";
+        return "redirect:/"; 
     }
 
     // Exibe o formulário de edição de usuário
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        User user = userService.findById(id);
-        if (user != null) {
-            model.addAttribute("user", user);
-            return "user/form";
+    public String showEditForm(Authentication authentication, Model model) {
+        String username = authentication.getName(); 
+        Optional<User> user = userService.findByUsername(username); 
+
+        if (user.isPresent()) {
+            model.addAttribute("user", user.get());  
+            return "user/editForm";
         }
+
         return "redirect:/user";
     }
 
-    // Atualiza os dados do usuário após a validação do formulário
+    // Edita o usuário
     @PostMapping("/edit/{id}")
-    public String updateUser(@PathVariable Long id, @Valid @ModelAttribute User user, BindingResult result) {
-        if (result.hasErrors()) {
-            return "user/form";
-        }
-        user.setId(id);
-        userService.save(user);
-        return "redirect:/user";
-    }
-
-    // Deleta o usuário
-    @DeleteMapping("/delete/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        userService.delete(id);
-        return "redirect:/user";
+    public String editUser(@PathVariable Long id, @ModelAttribute User user, HttpServletRequest request) {
+        userService.update(id, user); 
+        return "redirect:/user"; 
     }
 }

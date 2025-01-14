@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Usuários</title>
+    <title>Orçamentos</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
 </head>
@@ -13,29 +13,31 @@
 
 <div class="container">
     <div class="d-flex justify-content-start align-items-center">
-        <h3 class="pt-3 mb-5">Lista de Usuários</h3>
+        <h3 class="pt-3 mb-5">Lista de Orçamentos</h3>
     </div>
 
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead>
             <tr>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Endereço</th>
+                <th>Valor</th>
+                <th>Categoria</th>
+                <th>Data de Início</th>
+                <th>Data de Fim</th>
                 <th>Status</th>
                 <th>Ações</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="user : ${users}">
-                <td th:text="${user.name}"></td>
-                <td th:text="${user.email}"></td>
-                <td th:text="${user.address}"></td>
-                <td th:text="${user.isActive ? 'Ativo' : 'Inativo'}"></td>
+            <tr th:each="budget : ${budgets}">
+                <td th:text="${budget.value}"></td>
+                <td th:text="${budget.category}"></td>
+                <td th:text="${T(com.homemoney.utils.DateUtils).formatToBrazilianDate(budget.startDate)}"></td>
+                <td th:text="${T(com.homemoney.utils.DateUtils).formatToBrazilianDate(budget.endDate)}"></td>
+                <td th:text="${budget.status}"></td>
                 <td>
-                    <a th:href="@{/user/edit/{id}(id=${user.id})}" class="btn btn-warning btn-sm">Editar</a>
-                    <a th:href="@{/user/delete/{id}(id=${user.id})}" class="btn btn-danger btn-sm">Excluir</a>
+                    <a class="btn btn-warning btn-sm" th:href="@{/budget/edit/{id}(id=${budget.id})}">Editar</a>
+                    <a class="btn btn-danger btn-sm" th:href="@{/budget/delete/{id}(id=${budget.id})}">Deletar</a>
                 </td>
             </tr>
             </tbody>

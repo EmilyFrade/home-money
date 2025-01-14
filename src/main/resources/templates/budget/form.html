@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Despesa</title>
+    <title>Cadastrar Orçamento</title>
     <!-- Link para o Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -33,8 +33,8 @@
 
 <!-- Conteúdo principal -->
 <div class="container-fluid" style="margin-left: 250px; margin-top: 0; padding-left: 20px; padding-right: 20px;">
-    <h3 class="pt-3">Cadastro de despesa</h3>
-    <form th:action="@{'/expense/' + ${expense.id}}" th:object="${expense}" method="post">
+    <h3 class="pt-3">Cadastro de Orçamento</h3>
+    <form th:action="@{${budget.id} != null ? '/budget/edit/' + ${budget.id} : '/budget'}" th:object="${budget}" method="post">
 
         <!-- Campo Valor -->
         <div class=" pt-3 mb-3">
@@ -50,30 +50,16 @@
             </select>
         </div>
 
-        <!-- Campo Descrição -->
-        <div class="mb-3">
-            <label for="description" class="form-label">Descrição (opcional):</label>
-            <textarea class="form-control form-control-sm form-textarea" th:field="*{description}"></textarea>
-        </div>
-
-        <!-- Campos de Data (Vencimento e Pagamento)-->
+        <!-- Campos de Data (Início e Fim) -->
         <div class="row">
             <div class="col-md-12 mb-3">
-                <label for="expirationDate" class="form-label">Data de Vencimento (opcional):</label>
-                <input type="date" class="form-control form-control-sm" th:field="*{expirationDate}" />
+                <label for="startDate" class="form-label">Data de Início:</label>
+                <input type="date" class="form-control form-control-sm" th:field="*{startDate}" required />
             </div>
             <div class="col-md-12 mb-3">
-                <label for="paymentDate" class="form-label">Data de Pagamento (opcional):</label>
-                <input type="date" class="form-control form-control-sm" th:field="*{paymentDate}" />
+                <label for="endDate" class="form-label">Data de Fim:</label>
+                <input type="date" class="form-control form-control-sm" th:field="*{endDate}" required />
             </div>
-        </div>
-
-        <!-- Campo Forma de Pagamento -->
-        <div class="mb-3">
-            <label for="paymentMethod" class="form-label">Forma de Pagamento:</label>
-            <select class="form-select form-select-sm" th:field="*{paymentMethod}" required>
-                <option th:each="method : ${paymentMethods}" th:value="${method}" th:text="${method}"></option>
-            </select>
         </div>
 
         <!-- Botão Salvar -->

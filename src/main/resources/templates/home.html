@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <!-- Link para o Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Home Money</title>
 </head>
+
 <body class="d-flex flex-column" style="height: 100vh;">
 
-<!-- Substituindo a barra de navegação e o menu lateral -->
 <div th:replace="~{menu.html}"></div>
 
-<!-- Conteúdo principal -->
-<div th:block="content" class="container-fluid" style="margin-left: 250px; margin-top: 0; padding-left: 20px; padding-right: 20px;">
-    <h3 class="pt-3">Bem-vindo ao sistema de gestão de gastos de uma residência!</h3>
+<div class="flex justify-center items-center h-full">
+    <div class="text-center">
+        <h1 class="text-4xl font-bold">Bem-vindo ao sistema</h1>
+        <p class="text-lg mt-2">Escolha uma opção no menu lateral.</p>
+    </div>
 </div>
 <div th:block="content" class="container-fluid" style="margin-left: 250px; margin-top: 0; padding-left: 20px; padding-right: 20px;">
     <h3 class="pt-3">Seu Dashboard</h3>
@@ -33,6 +32,7 @@
             </ul>
         </div>
     </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

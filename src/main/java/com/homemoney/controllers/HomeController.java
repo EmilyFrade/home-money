@@ -5,15 +5,16 @@ import com.homemoney.services.expense.ExpenseService;
 import com.homemoney.services.user.UserService;
 import com.homemoney.model.user.User;
 import com.homemoney.model.budget.Budget;
-import com.homemoney.model.expense.Expense;
+//import com.homemoney.model.expense.Expense;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Map;
+import java.time.Month;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -32,34 +33,33 @@ public class HomeController {
     public String home(Model model) {
         User user = userService.findById(1L);
 
-        // Dados de despesas
         double totalExpenses = expenseService.calculateTotalExpenses();
         Map<String, Double> expensesByCategory = expenseService.calculateExpensesByCategory();
 
-        // Dados de orçamento
         List<Budget> budgets = budgetService.findAll();
         double totalBudget = budgets.stream()
-                                    .mapToDouble(budget -> budget.getValue().doubleValue()) // Conversão para double
-                                    .sum(); // Soma os valores de todos os orçamentos
-        double availableBudget = totalBudget - totalExpenses; // Orçamento disponível
+                                    .mapToDouble(budget -> budget.getValue().doubleValue())
+                                    .sum();
+        double availableBudget = totalBudget - totalExpenses;
+        Map<String, Double> budgetByCategory = budgetService.calculateBudgetByCategory();
 
-        // Preparando dados para os gráficos
-        Map<String, Double> budgetVsSpentData = Map.of(
-            "Orçamento", totalBudget,
-            "Gastos", totalExpenses
-        );
+        Map<Month, Double> monthlyExpenses = expenseService.findAll().stream()
+            .filter(expense -> expense.getPaymentDate() != null)
+            .collect(Collectors.groupingBy(
+                expense -> expense.getPaymentDate().getMonth(),
+                Collectors.summingDouble(expense -> expense.getValue().doubleValue())
+            ));
 
-        // Categorias para o gráfico de distribuição de gastos
-        List<String> categories = budgets.stream()
-                                         .map(budget -> budget.getCategory().name()) // Convertendo para String
-                                         .distinct() // Filtra as categorias únicas
-                                         .collect(Collectors.toList());
+        double averageMonthlyExpense = monthlyExpenses.values().stream()
+            .mapToDouble(Double::doubleValue)
+            .average()
+            .orElse(0.0);
 
         model.addAttribute("totalExpenses", totalExpenses);
         model.addAttribute("availableBudget", availableBudget);
+        model.addAttribute("averageMonthlyExpense", averageMonthlyExpense);
         model.addAttribute("expensesByCategory", expensesByCategory);
-        model.addAttribute("budgetVsSpentData", budgetVsSpentData);
-        model.addAttribute("categories", categories);
+        model.addAttribute("budgetByCategory", budgetByCategory);
         model.addAttribute("user", user);
 
         return "home";

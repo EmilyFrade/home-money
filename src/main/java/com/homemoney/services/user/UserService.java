@@ -5,7 +5,6 @@ import com.homemoney.repositories.user.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -36,8 +35,6 @@ public class UserService {
 
     public void saveAndAuthenticate(User user, HttpServletRequest request) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setIsActive(true);
-        user.setRegistrationDate(LocalDate.now());
         userRepository.save(user);
 
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), Collections.emptyList());

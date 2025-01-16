@@ -35,8 +35,8 @@ public class User {
     @Size(max = 255)
     private String address;
 
-    private Boolean isActive;
+    private Boolean isActive = true;
 
     @NotNull
-    private LocalDate registrationDate;
+    private LocalDate registrationDate = LocalDate.now();
 }

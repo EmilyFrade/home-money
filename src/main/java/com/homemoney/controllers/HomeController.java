@@ -4,8 +4,6 @@ import com.homemoney.services.budget.BudgetService;
 import com.homemoney.services.expense.ExpenseService;
 import com.homemoney.services.user.UserService;
 import com.homemoney.model.user.User;
-//import com.homemoney.model.budget.Budget;
-//import com.homemoney.model.expense.Expense;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,9 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.Month;
-//import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 public class HomeController {
@@ -35,27 +31,29 @@ public class HomeController {
 
         double totalExpensesMonth = expenseService.calculateTotalExpensesByCurrentMonth();
         Map<String, Double> expensesByCategory = expenseService.calculateExpensesByCategoryCurrentMonth();
+        Map<String, Map<String, Double>> monthlyExpensesByCategory = expenseService.calculateMonthlyExpensesByCategory();
+        Map<Month, Double> monthlyExpenses = expenseService.calculateTotalExpensesByMonth();
 
         double availableBudget = budgetService.calculateAvailableBudget(totalExpensesMonth);
         Map<String, Double> budgetByCategory = budgetService.calculateBudgetByCategoryCurrentMonth();
-
-        Map<Month, Double> monthlyExpenses = expenseService.findAll().stream()
-            .filter(expense -> expense.getPaymentDate() != null)
-            .collect(Collectors.groupingBy(
-                expense -> expense.getPaymentDate().getMonth(),
-                Collectors.summingDouble(expense -> expense.getValue().doubleValue())
-            ));
+        Map<String, Map<Month, Double>> monthlyBudgetByCategory = budgetService.calculateMonthlyBudgetByCategory();
+        Map<Month, Double> monthlyBudget = budgetService.calculateTotalBudgetByMonth(); 
 
         double averageMonthlyExpense = monthlyExpenses.values().stream()
             .mapToDouble(Double::doubleValue)
             .average()
             .orElse(0.0);
 
+        // Passando as variáveis para a view
         model.addAttribute("totalExpensesMonth", totalExpensesMonth);
         model.addAttribute("availableBudget", availableBudget);
         model.addAttribute("averageMonthlyExpense", averageMonthlyExpense);
         model.addAttribute("expensesByCategory", expensesByCategory);
         model.addAttribute("budgetByCategory", budgetByCategory);
+        model.addAttribute("monthlyExpensesByCategory", monthlyExpensesByCategory);
+        model.addAttribute("monthlyBudgetByCategory", monthlyBudgetByCategory);
+        model.addAttribute("monthlyExpenses", monthlyExpenses);  
+        model.addAttribute("monthlyBudget", monthlyBudget);    
         model.addAttribute("user", user);
 
         return "home";

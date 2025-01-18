@@ -74,94 +74,159 @@
 </div>
 
 <!-- Scripts Bootstrap -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Gráficos C3.js -->
 <script th:inline="javascript">
+    // Função para verificar se os dados estão vazios ou nulos
+    function isEmpty(obj) {
+        return Object.keys(obj).length === 0 || obj === null;
+    }
+
     // Gráfico 1: Distribuição de Gastos por Categoria (Gráfico de Pizza)
     var expensesByCategory = /*[[${expensesByCategory}]]*/ {};
-    var chartData = Object.entries(expensesByCategory).map(function(entry) {
-        return [entry[0], entry[1]];
-    });
+    if (!isEmpty(expensesByCategory)) {
+        var chartCategory = c3.generate({
+            bindto: '#chart-category',
+            data: {
+                columns: Object.entries(expensesByCategory), // Usando diretamente a estrutura de dados
+                type: 'pie'
+            }
+        });
+    } else {
+        // Caso não haja dados, esconder o gráfico ou mostrar uma mensagem
+        document.getElementById('chart-category').innerHTML = '<p>Sem dados para exibir.</p>';
+    }
 
-    var chartCategory = c3.generate({
-        bindto: '#chart-category',
-        data: {
-            columns: chartData,
-            type: 'pie'
-        }
-    });
-
-    //grafico 2
+    // Gráfico 2: Comparação entre Orçamento e Gastos por Categoria (Gráfico de Barras)
     var budgetByCategory = /*[[${budgetByCategory}]]*/ {};
     var expensesByCategory = /*[[${expensesByCategory}]]*/ {};
+    var categories = [...new Set([...Object.keys(budgetByCategory), ...Object.keys(expensesByCategory)])];
+    
+    var budgetData = categories.map(category => budgetByCategory[category] || 0);
+    var expenseData = categories.map(category => expensesByCategory[category] || 0);
 
-    var budgetData = [];
-    var expenseData = [];
-    var categoriesSet = new Set();
-
-    Object.keys(budgetByCategory).forEach(function(category) {
-        categoriesSet.add(category);
-    });
-
-    Object.keys(expensesByCategory).forEach(function(category) {
-        categoriesSet.add(category);
-    });
-
-    var categories = Array.from(categoriesSet);
-
-    categories.forEach(function(category) {
-        budgetData.push(budgetByCategory[category] || 0);
-        expenseData.push(expensesByCategory[category] || 0);
-    });
-
-    var chartBudgetVsSpent = c3.generate({
-        bindto: '#chart-budget-vs-spent',
-        data: {
-            columns: [
-                ['Orçamento', ...budgetData],
-                ['Gastos', ...expenseData]
-            ],
-            type: 'bar'
-        },
-        axis: {
-            x: {
-                type: 'category',
-                categories: categories
+    if (categories.length > 0) {
+        c3.generate({
+            bindto: '#chart-budget-vs-spent',
+            data: {
+                columns: [
+                    ['Orçamento', ...budgetData],
+                    ['Gastos', ...expenseData]
+                ],
+                type: 'bar'
+            },
+            axis: {
+                x: {
+                    type: 'category',
+                    categories: categories
+                }
             }
-        }
-    });
+        });
+    } else {
+        document.getElementById('chart-budget-vs-spent').innerHTML = '<p>Sem dados para exibir.</p>';
+    }
 
+    // Gráfico 3: Gastos Mensais por Categoria (Gráfico de Linha)
+    var monthlyExpensesByCategory = /*[[${monthlyExpensesByCategory}]]*/ {};
+    if (!isEmpty(monthlyExpensesByCategory)) {
+        var columnsData = Object.entries(monthlyExpensesByCategory).map(([category, monthlyData]) => {
+            var dataArray = [category];
+            var monthsOrder = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+            monthsOrder.forEach(month => {
+                dataArray.push(monthlyData[month] || 0);
+            });
+            return dataArray;
+        });
 
-    // Gráfico 3: Gastos Mensais (Gráfico de Linha)
-    var chartMonthlySpent = c3.generate({
-        bindto: '#chart-monthly-spent',
-        data: {
-            columns: [
-                ['Janeiro', 200],
-                ['Fevereiro', 300],
-                ['Março', 250],
-                ['Abril', 400]
-            ],
-            type: 'line'
-        }
-    });
-
-    // Gráfico 4: Projeção de Gasto x Orçamento (Gráfico de Área)
-    var chartProjection = c3.generate({
-        bindto: '#chart-projection',
-        data: {
-            columns: [
-                ['Orçamento', 1500, 1500, 1500, 1500],
-                ['Gastos', 500, 800, 1200, 1500]
-            ],
-            types: {
-                Orçamento: 'area',
-                Gastos: 'area'
+        c3.generate({
+            bindto: '#chart-monthly-spent',
+            data: {
+                columns: columnsData,
+                type: 'line'
+            },
+            axis: {
+                x: {
+                    type: 'category',
+                    categories: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+                }
             }
-        }
-    });
+        });
+    } else {
+        document.getElementById('chart-monthly-spent').innerHTML = '<p>Sem dados para exibir.</p>';
+    }
+
+    // Gráfico 4: Projeção de Gasto vs Orçamento (Gráfico de Área)
+    var monthMap = {
+        'JANUARY': 'Jan',
+        'FEBRUARY': 'Fev',
+        'MARCH': 'Mar',
+        'APRIL': 'Abr',
+        'MAY': 'Mai',
+        'JUNE': 'Jun',
+        'JULY': 'Jul',
+        'AUGUST': 'Ago',
+        'SEPTEMBER': 'Set',
+        'OCTOBER': 'Out',
+        'NOVEMBER': 'Nov',
+        'DECEMBER': 'Dez'
+    };
+
+    var monthlyBudget = /*[[${monthlyBudget}]]*/ {};
+    var monthlyExpenses = /*[[${monthlyExpenses}]]*/ {};
+
+    // Meses do gráfico no formato correto
+    var months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+    if (!isEmpty(monthlyBudget) && !isEmpty(monthlyExpenses)) {
+        // Preparar os dados para o gráfico
+        var budgetData = months.map(function(month) {
+            var monthKey = Object.keys(monthlyBudget).find(key => monthMap[key] === month);
+            return monthlyBudget[monthKey] || 0; // Usa o valor do orçamento por mês ou 0 se não houver
+        });
+
+        var expenseData = months.map(function(month) {
+            var monthKey = Object.keys(monthlyExpenses).find(key => monthMap[key] === month);
+            return monthlyExpenses[monthKey] || 0; // Usa o valor dos gastos por mês ou 0 se não houver
+        });
+
+        // Gerar o gráfico de área
+        c3.generate({
+            bindto: '#chart-projection',
+            data: {
+                columns: [
+                    ['Orçamento', ...budgetData],
+                    ['Gastos', ...expenseData]
+                ],
+                types: {
+                    Orçamento: 'area',
+                    Gastos: 'area'
+                },
+                colors: {
+                    Orçamento: '#2ca02c', // Cor verde para o orçamento
+                    Gastos: '#ff7f0e' // Cor laranja para os gastos
+                }
+            },
+            axis: {
+                x: {
+                    type: 'category',
+                    categories: months  // Meses no eixo X
+                },
+                y: {
+                    label: 'Valor (R$)',  // Legenda do eixo Y
+                    tick: {
+                        format: function(d) { return 'R$ ' + d.toFixed(2); } // Formatar valores com "R$"
+                    }
+                }
+            },
+            tooltip: {
+                format: {
+                    value: function(value) { return 'R$ ' + value.toFixed(2); } // Formatar tooltip
+                }
+            }
+        });
+    } else {
+        document.getElementById('chart-projection').innerHTML = '<p>Sem dados para exibir.</p>';
+    }
 </script>
+
 
 </body>
 </html>

@@ -10,8 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,5 +108,36 @@ public class ExpenseService {
                     expense -> expense.getCategory().toString(),
                     Collectors.summingDouble(expense -> expense.getValue().doubleValue())
                 ));
+    }
+
+    // Novo método para calcular gastos mensais por categoria
+    public Map<String, Map<String, Double>> calculateMonthlyExpensesByCategory() {
+        return expenseRepository.findAll().stream()
+                .filter(expense -> expense.getPaymentDate() != null || expense.getExpirationDate() != null)
+                .collect(Collectors.groupingBy(
+                    expense -> expense.getCategory().toString(),
+                    Collectors.groupingBy(
+                        expense -> {
+                            LocalDate date = expense.getPaymentDate() != null ? expense.getPaymentDate() : expense.getExpirationDate();
+                            return date.getMonth().getDisplayName(TextStyle.FULL, Locale.forLanguageTag("pt-BR"));
+                        },
+                        Collectors.summingDouble(expense -> expense.getValue().doubleValue())
+                    )
+                ));
+    }
+
+    public Map<Month, Double> calculateTotalExpensesByMonth() {
+    return expenseRepository.findAll().stream()
+            .filter(expense -> {
+                LocalDate date = expense.getPaymentDate() != null ? expense.getPaymentDate() : expense.getExpirationDate();
+                return date != null;
+            })
+            .collect(Collectors.groupingBy(
+                expense -> {
+                    LocalDate date = expense.getPaymentDate() != null ? expense.getPaymentDate() : expense.getExpirationDate();
+                    return date.getMonth();
+                },
+                Collectors.summingDouble(expense -> expense.getValue().doubleValue())
+            ));
     }
 }

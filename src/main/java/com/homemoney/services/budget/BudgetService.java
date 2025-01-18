@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,6 +62,28 @@ public class BudgetService {
                 .filter(budget -> budget.getStartDate() != null && budget.getStartDate().getMonth() == now.getMonth() && budget.getStartDate().getYear() == now.getYear())
                 .collect(Collectors.groupingBy(
                     budget -> budget.getCategory().toString(),
+                    Collectors.summingDouble(budget -> budget.getValue().doubleValue())
+                ));
+    }
+
+    public Map<String, Map<Month, Double>> calculateMonthlyBudgetByCategory() {
+        return budgetRepository.findAll().stream()
+                .filter(budget -> budget.getStatus() == Status.Ativo)
+                .filter(budget -> budget.getStartDate() != null)
+                .collect(Collectors.groupingBy(
+                    budget -> budget.getCategory().toString(),
+                    Collectors.groupingBy(
+                        budget -> budget.getStartDate().getMonth(),
+                        Collectors.summingDouble(budget -> budget.getValue().doubleValue())
+                    )
+                ));
+    }
+
+    public Map<Month, Double> calculateTotalBudgetByMonth() { 
+        return budgetRepository.findAll().stream()
+                .filter(budget -> budget.getStartDate() != null) //USA DATA DE INICIO PARA DETERMINAR MES
+                .collect(Collectors.groupingBy(
+                    budget -> budget.getStartDate().getMonth(),
                     Collectors.summingDouble(budget -> budget.getValue().doubleValue())
                 ));
     }

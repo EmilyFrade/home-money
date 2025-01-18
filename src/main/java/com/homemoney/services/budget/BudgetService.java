@@ -1,10 +1,12 @@
 package com.homemoney.services.budget;
 
 import com.homemoney.model.budget.Budget;
+import com.homemoney.model.budget.Budget.Status;
 import com.homemoney.repositories.budget.BudgetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,12 +34,34 @@ public class BudgetService {
         budgetRepository.deleteById(id);
     }
 
-    // Novo método para calcular o orçamento por categoria
-public Map<String, Double> calculateBudgetByCategory() {
-    return findAll().stream()
-        .collect(Collectors.groupingBy(
-            budget -> budget.getCategory().toString(), // Garantir que a categoria seja uma String
-            Collectors.summingDouble(budget -> budget.getValue().doubleValue())
-        ));
-}
+    public Map<String, Double> calculateBudgetByCategory() {
+        return findAll().stream()
+            .filter(budget -> budget.getStatus() == Status.Ativo)
+            .collect(Collectors.groupingBy(
+                budget -> budget.getCategory().toString(),
+                Collectors.summingDouble(budget -> budget.getValue().doubleValue())
+            ));
+    }
+
+    public double calculateTotalBudgetByCurrentMonth() {
+        return budgetRepository.findAll().stream()
+                .filter(budget -> budget.getStatus() == Status.Ativo)
+                .mapToDouble(budget -> budget.getValue().doubleValue())
+                .sum();
+    }
+
+    public double calculateAvailableBudget(double totalExpensesMonth) {
+        return calculateTotalBudgetByCurrentMonth() - totalExpensesMonth;
+    }
+
+    public Map<String, Double> calculateBudgetByCategoryCurrentMonth() {
+        LocalDate now = LocalDate.now();
+        return budgetRepository.findAll().stream()
+                .filter(budget -> budget.getStatus() == Status.Ativo)
+                .filter(budget -> budget.getStartDate() != null && budget.getStartDate().getMonth() == now.getMonth() && budget.getStartDate().getYear() == now.getYear())
+                .collect(Collectors.groupingBy(
+                    budget -> budget.getCategory().toString(),
+                    Collectors.summingDouble(budget -> budget.getValue().doubleValue())
+                ));
+    }
 }

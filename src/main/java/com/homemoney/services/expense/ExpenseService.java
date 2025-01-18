@@ -83,4 +83,29 @@ public class ExpenseService {
                     Collectors.summingDouble(expense -> expense.getValue().doubleValue())
                 ));
     }
+
+    public double calculateTotalExpensesByCurrentMonth() {
+        LocalDate now = LocalDate.now();
+        return expenseRepository.findAll().stream()
+                .filter(expense -> {
+                    LocalDate date = expense.getPaymentDate() != null ? expense.getPaymentDate() : expense.getExpirationDate();
+                    return date != null && date.getMonth() == now.getMonth() && date.getYear() == now.getYear();
+                })
+                .map(expense -> expense.getValue().doubleValue())
+                .mapToDouble(Double::doubleValue)
+                .sum();
+    }
+
+    public Map<String, Double> calculateExpensesByCategoryCurrentMonth() {
+        LocalDate now = LocalDate.now();
+        return expenseRepository.findAll().stream()
+                .filter(expense -> {
+                    LocalDate date = expense.getPaymentDate() != null ? expense.getPaymentDate() : expense.getExpirationDate();
+                    return date != null && date.getMonth() == now.getMonth() && date.getYear() == now.getYear();
+                })
+                .collect(Collectors.groupingBy(
+                    expense -> expense.getCategory().toString(),
+                    Collectors.summingDouble(expense -> expense.getValue().doubleValue())
+                ));
+    }
 }

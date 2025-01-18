@@ -4,7 +4,7 @@ import com.homemoney.services.budget.BudgetService;
 import com.homemoney.services.expense.ExpenseService;
 import com.homemoney.services.user.UserService;
 import com.homemoney.model.user.User;
-import com.homemoney.model.budget.Budget;
+//import com.homemoney.model.budget.Budget;
 //import com.homemoney.model.expense.Expense;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.Month;
-import java.util.List;
+//import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -33,15 +33,11 @@ public class HomeController {
     public String home(Model model) {
         User user = userService.findById(1L);
 
-        double totalExpenses = expenseService.calculateTotalExpenses();
-        Map<String, Double> expensesByCategory = expenseService.calculateExpensesByCategory();
+        double totalExpensesMonth = expenseService.calculateTotalExpensesByCurrentMonth();
+        Map<String, Double> expensesByCategory = expenseService.calculateExpensesByCategoryCurrentMonth();
 
-        List<Budget> budgets = budgetService.findAll();
-        double totalBudget = budgets.stream()
-                                    .mapToDouble(budget -> budget.getValue().doubleValue())
-                                    .sum();
-        double availableBudget = totalBudget - totalExpenses;
-        Map<String, Double> budgetByCategory = budgetService.calculateBudgetByCategory();
+        double availableBudget = budgetService.calculateAvailableBudget(totalExpensesMonth);
+        Map<String, Double> budgetByCategory = budgetService.calculateBudgetByCategoryCurrentMonth();
 
         Map<Month, Double> monthlyExpenses = expenseService.findAll().stream()
             .filter(expense -> expense.getPaymentDate() != null)
@@ -55,7 +51,7 @@ public class HomeController {
             .average()
             .orElse(0.0);
 
-        model.addAttribute("totalExpenses", totalExpenses);
+        model.addAttribute("totalExpensesMonth", totalExpensesMonth);
         model.addAttribute("availableBudget", availableBudget);
         model.addAttribute("averageMonthlyExpense", averageMonthlyExpense);
         model.addAttribute("expensesByCategory", expensesByCategory);

@@ -30,8 +30,8 @@
         <div class="col-md-4 col-12">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Total Gasto</h5>
-                    <p class="card-text">R$ <span th:text="${totalExpenses}"></span></p>
+                    <h5 class="card-title">Total Gasto Esse Mês</h5>
+                    <p class="card-text">R$ <span th:text="${totalExpensesMonth}"></span></p>
                 </div>
             </div>
         </div>
@@ -92,40 +92,46 @@
         }
     });
 
-    // Gráfico 2: Comparativo Orçamento x Gastos (Gráfico de Barras)
+    //grafico 2
     var budgetByCategory = /*[[${budgetByCategory}]]*/ {};
     var expensesByCategory = /*[[${expensesByCategory}]]*/ {};
 
-    // Criar as barras para cada categoria (orçamento e gastos)
     var budgetData = [];
     var expenseData = [];
-    var categories = [];
+    var categoriesSet = new Set();
 
-    Object.entries(expensesByCategory).forEach(function(entry) {
-        var category = entry[0]; // Nome da categoria
-        categories.push(category); // Adiciona o nome da categoria
+    Object.keys(budgetByCategory).forEach(function(category) {
+        categoriesSet.add(category);
+    });
 
-        // Adiciona o orçamento e os gastos dessa categoria
-        budgetData.push(budgetByCategory[category] || 0); // Garantir que o orçamento não seja undefined
-        expenseData.push(entry[1]); // Valor dos gastos dessa categoria
+    Object.keys(expensesByCategory).forEach(function(category) {
+        categoriesSet.add(category);
+    });
+
+    var categories = Array.from(categoriesSet);
+
+    categories.forEach(function(category) {
+        budgetData.push(budgetByCategory[category] || 0);
+        expenseData.push(expensesByCategory[category] || 0);
     });
 
     var chartBudgetVsSpent = c3.generate({
         bindto: '#chart-budget-vs-spent',
         data: {
             columns: [
-                ['Orçamento', ...budgetData], // Coluna de orçamento
-                ['Gastos', ...expenseData]    // Coluna de gastos
+                ['Orçamento', ...budgetData],
+                ['Gastos', ...expenseData]
             ],
             type: 'bar'
         },
         axis: {
             x: {
                 type: 'category',
-                categories: categories // Categorias no eixo X
+                categories: categories
             }
         }
     });
+
 
     // Gráfico 3: Gastos Mensais (Gráfico de Linha)
     var chartMonthlySpent = c3.generate({

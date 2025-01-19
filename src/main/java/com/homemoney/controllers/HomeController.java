@@ -29,8 +29,8 @@ public class HomeController {
     public String home(Model model) {
         User user = userService.findById(1L);
 
-        double totalExpensesMonth = expenseService.calculateTotalExpensesByCurrentMonth();
-        Map<String, Double> expensesByCategory = expenseService.calculateExpensesByCategoryCurrentMonth();
+        double totalExpensesMonth = expenseService.calculateTotalExpenses(true);
+        Map<String, Double> expensesByCategory = expenseService.calculateExpensesByCategory(true);
         Map<String, Map<String, Double>> monthlyExpensesByCategory = expenseService.calculateMonthlyExpensesByCategory();
         Map<Month, Double> monthlyExpenses = expenseService.calculateTotalExpensesByMonth();
 

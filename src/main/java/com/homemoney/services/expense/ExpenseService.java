@@ -70,74 +70,53 @@ public class ExpenseService {
         expense.setStatus(Expense.Status.Pendente);
     }
 
-    public double calculateTotalExpenses() {
+    private LocalDate getRelevantDate(Expense expense) {
+        return expense.getPaymentDate() != null ? expense.getPaymentDate() : expense.getExpirationDate();
+    }
+
+    private boolean isInCurrentMonth(Expense expense) {
+        LocalDate date = getRelevantDate(expense);
+        LocalDate now = LocalDate.now();
+        return date != null && date.getMonth() == now.getMonth() && date.getYear() == now.getYear();
+    }
+
+    public double calculateTotalExpenses(boolean currentMonthOnly) {
         return expenseRepository.findAll().stream()
+                .filter(expense -> !currentMonthOnly || isInCurrentMonth(expense))
                 .map(expense -> expense.getValue().doubleValue())
                 .mapToDouble(Double::doubleValue)
                 .sum();
     }
 
-    public Map<String, Double> calculateExpensesByCategory() {
+    public Map<String, Double> calculateExpensesByCategory(boolean currentMonthOnly) {
         return expenseRepository.findAll().stream()
+                .filter(expense -> !currentMonthOnly || isInCurrentMonth(expense))
                 .collect(Collectors.groupingBy(
                     expense -> expense.getCategory().toString(),
                     Collectors.summingDouble(expense -> expense.getValue().doubleValue())
                 ));
     }
 
-    public double calculateTotalExpensesByCurrentMonth() {
-        LocalDate now = LocalDate.now();
-        return expenseRepository.findAll().stream()
-                .filter(expense -> {
-                    LocalDate date = expense.getPaymentDate() != null ? expense.getPaymentDate() : expense.getExpirationDate();
-                    return date != null && date.getMonth() == now.getMonth() && date.getYear() == now.getYear();
-                })
-                .map(expense -> expense.getValue().doubleValue())
-                .mapToDouble(Double::doubleValue)
-                .sum();
-    }
-
-    public Map<String, Double> calculateExpensesByCategoryCurrentMonth() {
-        LocalDate now = LocalDate.now();
-        return expenseRepository.findAll().stream()
-                .filter(expense -> {
-                    LocalDate date = expense.getPaymentDate() != null ? expense.getPaymentDate() : expense.getExpirationDate();
-                    return date != null && date.getMonth() == now.getMonth() && date.getYear() == now.getYear();
-                })
-                .collect(Collectors.groupingBy(
-                    expense -> expense.getCategory().toString(),
-                    Collectors.summingDouble(expense -> expense.getValue().doubleValue())
-                ));
-    }
-
-    // Novo método para calcular gastos mensais por categoria
     public Map<String, Map<String, Double>> calculateMonthlyExpensesByCategory() {
         return expenseRepository.findAll().stream()
-                .filter(expense -> expense.getPaymentDate() != null || expense.getExpirationDate() != null)
+                .filter(expense -> getRelevantDate(expense) != null)
                 .collect(Collectors.groupingBy(
                     expense -> expense.getCategory().toString(),
                     Collectors.groupingBy(
-                        expense -> {
-                            LocalDate date = expense.getPaymentDate() != null ? expense.getPaymentDate() : expense.getExpirationDate();
-                            return date.getMonth().getDisplayName(TextStyle.FULL, Locale.forLanguageTag("pt-BR"));
-                        },
+                        expense -> getRelevantDate(expense)
+                                   .getMonth()
+                                   .getDisplayName(TextStyle.FULL, Locale.forLanguageTag("pt-BR")),
                         Collectors.summingDouble(expense -> expense.getValue().doubleValue())
                     )
                 ));
     }
 
     public Map<Month, Double> calculateTotalExpensesByMonth() {
-    return expenseRepository.findAll().stream()
-            .filter(expense -> {
-                LocalDate date = expense.getPaymentDate() != null ? expense.getPaymentDate() : expense.getExpirationDate();
-                return date != null;
-            })
-            .collect(Collectors.groupingBy(
-                expense -> {
-                    LocalDate date = expense.getPaymentDate() != null ? expense.getPaymentDate() : expense.getExpirationDate();
-                    return date.getMonth();
-                },
-                Collectors.summingDouble(expense -> expense.getValue().doubleValue())
-            ));
+        return expenseRepository.findAll().stream()
+                .filter(expense -> getRelevantDate(expense) != null)
+                .collect(Collectors.groupingBy(
+                    expense -> getRelevantDate(expense).getMonth(),
+                    Collectors.summingDouble(expense -> expense.getValue().doubleValue())
+                ));
     }
 }

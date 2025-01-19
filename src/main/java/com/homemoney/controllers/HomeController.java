@@ -33,16 +33,12 @@ public class HomeController {
         Map<String, Double> expensesByCategory = expenseService.calculateExpensesByCategory(true);
         Map<String, Map<String, Double>> monthlyExpensesByCategory = expenseService.calculateMonthlyExpensesByCategory();
         Map<Month, Double> monthlyExpenses = expenseService.calculateTotalExpensesByMonth();
+        double averageMonthlyExpense = expenseService.calculateAverageMonthlyExpense();
 
         double availableBudget = budgetService.calculateAvailableBudget(totalExpensesMonth);
         Map<String, Double> budgetByCategory = budgetService.calculateBudgetByCategoryCurrentMonth();
         Map<String, Map<Month, Double>> monthlyBudgetByCategory = budgetService.calculateMonthlyBudgetByCategory();
         Map<Month, Double> monthlyBudget = budgetService.calculateTotalBudgetByMonth(); 
-
-        double averageMonthlyExpense = monthlyExpenses.values().stream()
-            .mapToDouble(Double::doubleValue)
-            .average()
-            .orElse(0.0);
 
         // Passando as variáveis para a view
         model.addAttribute("totalExpensesMonth", totalExpensesMonth);

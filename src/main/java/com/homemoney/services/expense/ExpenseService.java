@@ -119,4 +119,13 @@ public class ExpenseService {
                     Collectors.summingDouble(expense -> expense.getValue().doubleValue())
                 ));
     }
+
+    public double calculateAverageMonthlyExpense() {
+        Map<Month, Double> totalExpensesByMonth = calculateTotalExpensesByMonth();
+
+        return totalExpensesByMonth.values().stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0);
+    }
 }

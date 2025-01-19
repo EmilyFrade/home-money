@@ -35,18 +35,32 @@ public class BudgetService {
         budgetRepository.deleteById(id);
     }
 
+    private List<Budget> getActiveBudgets() {
+        return budgetRepository.findAll().stream()
+                .filter(budget -> budget.getStatus() == Status.Ativo)
+                .collect(Collectors.toList());
+    }
+
+    private boolean isInCurrentMonth(LocalDate date) {
+        LocalDate now = LocalDate.now();
+        return date != null && date.getMonth() == now.getMonth() && date.getYear() == now.getYear();
+    }
+
+    private Map<String, Double> groupBudgetsByCategory(List<Budget> budgets) {
+        return budgets.stream()
+                .collect(Collectors.groupingBy(
+                        budget -> budget.getCategory().toString(),
+                        Collectors.summingDouble(budget -> budget.getValue().doubleValue())
+                ));
+    }
+
     public Map<String, Double> calculateBudgetByCategory() {
-        return findAll().stream()
-            .filter(budget -> budget.getStatus() == Status.Ativo)
-            .collect(Collectors.groupingBy(
-                budget -> budget.getCategory().toString(),
-                Collectors.summingDouble(budget -> budget.getValue().doubleValue())
-            ));
+        return groupBudgetsByCategory(getActiveBudgets());
     }
 
     public double calculateTotalBudgetByCurrentMonth() {
-        return budgetRepository.findAll().stream()
-                .filter(budget -> budget.getStatus() == Status.Ativo)
+        return getActiveBudgets().stream()
+                .filter(budget -> isInCurrentMonth(budget.getStartDate()))
                 .mapToDouble(budget -> budget.getValue().doubleValue())
                 .sum();
     }
@@ -56,35 +70,32 @@ public class BudgetService {
     }
 
     public Map<String, Double> calculateBudgetByCategoryCurrentMonth() {
-        LocalDate now = LocalDate.now();
-        return budgetRepository.findAll().stream()
-                .filter(budget -> budget.getStatus() == Status.Ativo)
-                .filter(budget -> budget.getStartDate() != null && budget.getStartDate().getMonth() == now.getMonth() && budget.getStartDate().getYear() == now.getYear())
-                .collect(Collectors.groupingBy(
-                    budget -> budget.getCategory().toString(),
-                    Collectors.summingDouble(budget -> budget.getValue().doubleValue())
-                ));
+        List<Budget> currentMonthBudgets = getActiveBudgets().stream()
+                .filter(budget -> isInCurrentMonth(budget.getStartDate()))
+                .collect(Collectors.toList());
+
+        return groupBudgetsByCategory(currentMonthBudgets);
     }
 
     public Map<String, Map<Month, Double>> calculateMonthlyBudgetByCategory() {
-        return budgetRepository.findAll().stream()
-                .filter(budget -> budget.getStatus() == Status.Ativo)
+        return getActiveBudgets().stream()
                 .filter(budget -> budget.getStartDate() != null)
                 .collect(Collectors.groupingBy(
-                    budget -> budget.getCategory().toString(),
-                    Collectors.groupingBy(
-                        budget -> budget.getStartDate().getMonth(),
-                        Collectors.summingDouble(budget -> budget.getValue().doubleValue())
-                    )
+                        budget -> budget.getCategory().toString(),
+                        Collectors.groupingBy(
+                                budget -> budget.getStartDate().getMonth(),
+                                Collectors.summingDouble(budget -> budget.getValue().doubleValue())
+                        )
                 ));
     }
 
-    public Map<Month, Double> calculateTotalBudgetByMonth() { 
-        return budgetRepository.findAll().stream()
-                .filter(budget -> budget.getStartDate() != null) //USA DATA DE INICIO PARA DETERMINAR MES
+    public Map<Month, Double> calculateTotalBudgetByMonth() {
+        return getActiveBudgets().stream()
+                .filter(budget -> budget.getStartDate() != null)
                 .collect(Collectors.groupingBy(
-                    budget -> budget.getStartDate().getMonth(),
-                    Collectors.summingDouble(budget -> budget.getValue().doubleValue())
+                        budget -> budget.getStartDate().getMonth(),
+                        Collectors.summingDouble(budget -> budget.getValue().doubleValue())
                 ));
     }
+    
 }

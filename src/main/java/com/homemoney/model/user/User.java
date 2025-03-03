@@ -42,9 +42,6 @@ public class User {
     @NotNull
     private String password;
 
-    @Size(max = 255)
-    private String address;
-
     private Boolean isActive = true;
 
     @NotNull

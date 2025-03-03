@@ -19,7 +19,11 @@
                 <h3 class="card-title mb-4">Perfil do Usuário</h3>
                 <p><strong>Nome:</strong> <span th:text="${user.name}"></span></p>
                 <p><strong>Email:</strong> <span th:text="${user.username}"></span></p>
-                <p><strong>Endereço:</strong> <span th:text="${user.address}"></span></p>
+                <p><strong>Residência:</strong> <span th:text="${user.residence.name}"></span></p>
+                <p><strong>Endereço:</strong> 
+                    <span th:text="${user.residence.street + ', ' + user.residence.neighborhood}"></span><br>
+                    <span th:text="${user.residence.city + '/' + user.residence.state + ' - CEP: ' + user.residence.zipCode}"></span>
+                </p>
 
                 <a th:href="@{'/user/edit/' + ${user.id}}" class="btn btn-primary mt-3">Editar</a>
                 <a href="/logout" class="btn btn-danger mt-3">Sair</a>

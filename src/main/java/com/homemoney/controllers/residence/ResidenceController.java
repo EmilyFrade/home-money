@@ -23,6 +23,13 @@ public class ResidenceController {
     @Autowired
     private UserService userService;
 
+    @GetMapping
+    public String show(Authentication authentication, Model model) {
+        Optional<User> user = userService.findCurrentUserByUsername(authentication);
+        model.addAttribute("residence", user.get().getResidence());
+        return "residence/show";
+    }
+
     @GetMapping("/choose")
     public String chooseResidence(Model model) {
         model.addAttribute("residence", new Residence());

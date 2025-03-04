@@ -2,6 +2,7 @@ package com.homemoney.services.user;
 
 import com.homemoney.model.user.User;
 import com.homemoney.repositories.user.UserRepository;
+import com.homemoney.model.residence.Residence;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -29,7 +30,8 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public Optional<User> findByUsername(String username) {
+    public Optional<User> findCurrentUserByUsername(Authentication authentication) {
+        String username = authentication.getName(); 
         return userRepository.findByUsername(username); 
     }    
 
@@ -56,5 +58,11 @@ public class UserService {
     
             userRepository.save(existingUser);
         }
+    }
+
+    public void updateResidence(Long userId, Residence residence) {
+        User user = findById(userId);
+        user.setResidence(residence);
+        userRepository.save(user);
     }
 }

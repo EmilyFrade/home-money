@@ -1,14 +1,17 @@
 package com.homemoney.controllers.residence;
 
 import com.homemoney.model.residence.Residence;
+import com.homemoney.model.user.User;
 import com.homemoney.services.residence.ResidenceService;
+import com.homemoney.services.user.UserService;
+
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/residence")
@@ -17,26 +20,29 @@ public class ResidenceController {
     @Autowired
     private ResidenceService residenceService;
 
-    @GetMapping
-    public String listResidences(Model model) {
-        List<Residence> residences = residenceService.findAll();
-        model.addAttribute("residences", residences);
+    @Autowired
+    private UserService userService;
 
-        return "residence/confirm";
+    @GetMapping("/choose")
+    public String chooseResidence(Model model) {
+        model.addAttribute("residences", residenceService.findAll());
+        return "residence/choose";
     }
 
-    @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("residence", new Residence());
-
-        return "residence/form";
+    @PostMapping("/join")
+    public String joinResidence(@RequestParam Long residenceId, Authentication authentication) {
+        Residence residence = residenceService.findById(residenceId);
+        Optional<User> user = userService.findCurrentUserByUsername(authentication); 
+        userService.updateResidence(user.get().getId(), residence);
+        return "redirect:/";
     }
 
-    @PostMapping
-    public String saveResidence(@ModelAttribute Residence residence) {
+    @PostMapping("/create")
+    public String createAndJoinResidence(Residence residence, Authentication authentication) {
         residenceService.save(residence);
-
-        return "redirect:/residence/create";
+        Optional<User> user = userService.findCurrentUserByUsername(authentication); 
+        userService.updateResidence(user.get().getId(), residence);
+        return "redirect:/";
     }
 
     @GetMapping("/edit/{id}")

@@ -25,7 +25,6 @@ public class Residence {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotNull
     @Size(max = 255)
     private String name;
 

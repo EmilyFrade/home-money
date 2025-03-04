@@ -48,7 +48,6 @@ public class User {
     private LocalDate registrationDate = LocalDate.now();
 
     @ManyToOne
-    @NotNull
     private Residence residence;
 
     @OneToMany(mappedBy = "creator")

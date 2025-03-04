@@ -56,47 +56,7 @@
                         <!-- Formulário Nova Residência -->
                         <div id="newResidenceForm" style="display: none;">
                             <h4 class="text-center mb-3">Cadastrar Nova Residência</h4>
-                            <form th:action="@{/residence/create}" method="post">
-                                <div class="mb-3">
-                                    <label for="name" class="form-label">Nome da Residência:</label>
-                                    <input type="text" class="form-control" id="name" name="name">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="street" class="form-label">Logradouro:</label>
-                                    <input type="text" class="form-control" id="street" name="street" required>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col">
-                                        <label for="neighborhood" class="form-label">Bairro:</label>
-                                        <input type="text" class="form-control" id="neighborhood" name="neighborhood" required>
-                                    </div>
-                                    <div class="col">
-                                        <label for="zipCode" class="form-label">CEP:</label>
-                                        <input type="text" class="form-control" id="zipCode" name="zipCode" required>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col">
-                                        <label for="city" class="form-label">Cidade:</label>
-                                        <input type="text" class="form-control" id="city" name="city" required>
-                                    </div>
-                                    <div class="col">
-                                        <label for="state" class="form-label">Estado:</label>
-                                        <input type="text" class="form-control" id="state" name="state" maxlength="2" required>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col">
-                                        <label for="rentValue" class="form-label">Valor do Aluguel:</label>
-                                        <input type="number" class="form-control" id="rentValue" name="rentValue" required>
-                                    </div>
-                                    <div class="col">
-                                        <label for="maxCapacity" class="form-label">Capacidade de Moradores:</label>
-                                        <input type="number" class="form-control" id="maxCapacity" name="maxCapacity" required>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-success w-100">Criar Residência</button>
-                            </form>
+                            <div th:replace="~{residence/form :: residenceForm(@{/residence/create})}"></div>
                         </div>
                     </div>
                 </div>

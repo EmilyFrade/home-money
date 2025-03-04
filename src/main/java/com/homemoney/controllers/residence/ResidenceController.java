@@ -25,6 +25,7 @@ public class ResidenceController {
 
     @GetMapping("/choose")
     public String chooseResidence(Model model) {
+        model.addAttribute("residence", new Residence());
         model.addAttribute("residences", residenceService.findAll());
         return "residence/choose";
     }

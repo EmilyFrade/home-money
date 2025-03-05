@@ -5,6 +5,7 @@ import com.homemoney.model.user.User;
 import com.homemoney.services.residence.ResidenceService;
 import com.homemoney.services.user.UserService;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,18 @@ public class ResidenceController {
 
     @GetMapping
     public String show(Authentication authentication, Model model) {
-        Optional<User> user = userService.findCurrentUserByUsername(authentication);
-        model.addAttribute("residence", user.get().getResidence());
-        return "residence/show";
+        Optional<User> currentUser = userService.findCurrentUserByUsername(authentication);
+        
+        if (currentUser.isPresent()) {
+            Residence residence = currentUser.get().getResidence();
+            List<User> residenceUsers = userService.findByResidence(residence.getId());
+            
+            model.addAttribute("residence", residence);
+            model.addAttribute("residenceUsers", residenceUsers);
+            return "residence/show";
+        }
+        
+        return "redirect:/";
     }
 
     @GetMapping("/choose")

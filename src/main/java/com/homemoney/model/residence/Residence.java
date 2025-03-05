@@ -55,7 +55,7 @@ public class Residence {
     private BigDecimal rentValue;
 
     @OneToMany(mappedBy = "residence")
-    private Set<User> residents = new HashSet<>();
+    private Set<User> users = new HashSet<>();
 
     @OneToMany(mappedBy = "residence")
     private Set<Expense> expenses = new HashSet<>();

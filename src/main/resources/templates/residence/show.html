@@ -25,7 +25,7 @@
             </div>
             
             <div class="card-body">
-                <div class="row">
+                <div class="row mb-4">
                     <div class="col-md-6">
                         <h4 class="mb-3">Informações do Endereço</h4>
                         <p><strong>Logradouro:</strong> <span th:text="${residence.street}"></span></p>
@@ -33,10 +33,49 @@
                         <p><strong>CEP:</strong> <span th:text="${residence.zipCode}"></span></p>
                         <p><strong>Cidade/Estado:</strong> <span th:text="${residence.city + '/' + residence.state}"></span></p>
                     </div>
+                    
                     <div class="col-md-6">
                         <h4 class="mb-3">Informações Gerais</h4>
                         <p><strong>Valor do Aluguel:</strong> <span th:text="${#numbers.formatCurrency(residence.rentValue)}"></span></p>
                         <p><strong>Capacidade Máxima:</strong> <span th:text="${residence.maxCapacity + ' moradores'}"></span></p>
+                        <p><strong>Moradores Atuais:</strong> <span th:text="${#lists.size(residenceUsers) + ' de ' + residence.maxCapacity}"></span></p>
+                    </div>
+                </div>
+
+                <!-- Seção de Moradores -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h4 class="mb-0">Moradores</h4>
+                            </div>
+                            <div class="card-body">
+                                <div th:if="${#lists.isEmpty(residenceUsers)}" class="alert alert-info">
+                                    Nenhum morador registrado nesta residência.
+                                </div>
+                                <div th:unless="${#lists.isEmpty(residenceUsers)}" class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Email</th>
+                                                <th>Data de Entrada</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="user : ${residenceUsers}">
+                                                <td>
+                                                    <i class="bi bi-person-circle me-2"></i>
+                                                    <span th:text="${user.name}"></span>
+                                                </td>
+                                                <td th:text="${user.username}"></td>
+                                                <td th:text="${#temporals.format(user.registrationDate, 'dd/MM/yyyy')}"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

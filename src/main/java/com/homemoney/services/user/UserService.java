@@ -7,6 +7,7 @@ import com.homemoney.model.residence.Residence;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,5 +65,9 @@ public class UserService {
         User user = findById(userId);
         user.setResidence(residence);
         userRepository.save(user);
+    }
+
+    public List<User> findByResidence(Long residenceId) {
+        return userRepository.findByResidenceId(residenceId);
     }
 }

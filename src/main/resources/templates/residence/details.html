@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Residência</title>
+</head>
+
+<body>
+<h3>Detalhes da Residência</h3>
+<p>Nome: <span th:text="${residence.nome}"></span></p>
+<p>Endereço: <span th:text="${residence.logradouro}, ${residence.bairro}, ${residence.cidade}, ${residence.estado}"></span></p>
+<p>Valor do Aluguel: <span th:text="${residence.valorAluguel}"></span></p>
+
+<a href="/" class="btn btn-primary">Voltar para a página inicial</a>
+</body>
+</html>

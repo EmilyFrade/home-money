@@ -5,14 +5,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
+import com.homemoney.model.budget.Budget;
+import com.homemoney.model.expense.Expense;
 import com.homemoney.model.residence.Residence;
 
 @Entity
@@ -27,10 +31,6 @@ public class User {
     @Size(max = 100)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "residence_id", nullable = true)
-    private Residence residence;
-
     @NotNull
     @Email
     @Size(max = 255)
@@ -40,11 +40,17 @@ public class User {
     @NotNull
     private String password;
 
-    @Size(max = 255)
-    private String address;
-
     private Boolean isActive = true;
 
     @NotNull
     private LocalDate registrationDate = LocalDate.now();
+
+    @ManyToOne
+    private Residence residence;
+
+    @OneToMany(mappedBy = "creator")
+    private Set<Expense> createdExpenses = new HashSet<>();
+
+    @OneToMany(mappedBy = "creator")
+    private Set<Budget> createdBudgets = new HashSet<>();
 }

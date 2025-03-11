@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -76,16 +77,10 @@ public class ResidenceController {
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         Residence residence = user.getResidence();
+        List<User> residenceUsers = userService.findByResidence(residence.getId());
 
-        if (residence != null) {
-            model.addAttribute("residence", residence);
-        } else {
-            model.addAttribute("noResidence", true);
-        }
-
-        if (model.containsAttribute("inviteCode")) {
-            model.addAttribute("inviteCode", model.getAttribute("inviteCode"));
-        }
+        model.addAttribute("residence", residence);
+        model.addAttribute("residenceUsers", residenceUsers);
 
         return "residence/details";
     }

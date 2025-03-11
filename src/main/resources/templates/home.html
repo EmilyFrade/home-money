@@ -12,13 +12,11 @@
 <div class="text-center">
     <h1 class="text-4xl font-bold">Bem-vindo ao home money!</h1>
 
-    <!-- Se o usuário não tem residência -->
     <div th:if="${noResidence}">
         <p class="mt-4">Você ainda não possui uma residência associada.</p>
         <a href="/residence/create" class="btn btn-primary">Criar uma nova residência</a>
         <p class="pt-3">Ou</p>
 
-        <!-- Formulário de entrada do código de convite -->
         <form th:action="@{/residence/join}" method="post" class="d-flex flex-column align-items-center">
             <div class="mb-3">
                 <input type="text" name="inviteCode" class="form-control" placeholder="Código de Convite" required style="width: 10cm; margin: 0 auto;" />
@@ -28,13 +26,11 @@
             </div>
         </form>
 
-        <!-- Caso o código de convite seja inválido -->
         <div th:if="${invalidInviteCode}" class="mt-4 alert alert-danger" style="width: 10cm; margin: 0 auto;">
             O código de convite informado é inválido. Por favor, tente novamente.
         </div>
     </div>
 
-    <!-- Se o usuário tem residência -->
     <div th:if="${residence != null}">
         <h3 class="mt-4">Sua Residência</h3>
         <p>Nome: <span th:text="${residence.nome}"></span></p>

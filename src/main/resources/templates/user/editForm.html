@@ -18,7 +18,6 @@
             <div class="card-body">
                 <h3 class="card-title mb-3">Perfil do Usuário</h3>
 
-                <!-- Formulário de Edição -->
                 <form th:action="@{'/user/edit/' + ${user.id}}" th:object="${user}" method="post">
                     <div class="mb-3">
                         <label for="name" class="form-label">Nome:</label>

@@ -30,7 +30,6 @@ public class ResidenceService {
         residenceRepository.deleteById(id);
     }
 
-    // Método para buscar residência pelo código de convite
     public Optional<Residence> findByInviteCode(String inviteCode) {
         return residenceRepository.findByInviteCode(inviteCode);
     }

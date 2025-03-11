@@ -3,15 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes da Residência</title>
+    <title>Residencia</title>
 </head>
-
 <body>
-<h3>Detalhes da Residência</h3>
-<p>Nome: <span th:text="${residence.nome}"></span></p>
-<p>Endereço: <span th:text="${residence.logradouro}, ${residence.bairro}, ${residence.cidade}, ${residence.estado}"></span></p>
-<p>Valor do Aluguel: <span th:text="${residence.valorAluguel}"></span></p>
 
-<a href="/" class="btn btn-primary">Voltar para a página inicial</a>
+<div id="menu" th:replace="~{menu.html}"></div>
+<div class="container d-flex justify-content-center align-items-center vh-80">
+    <div class="card p-4 shadow-lg" style="width: 400px; border: 2px solid #28a745; border-radius: 10px;">
+        <div th:if="${residence != null}">
+            <h4 class="text-center mb-3">Detalhes da Residência</h4>
+        </div>
+        <div th:if="${residence != null}">
+            <div class="mb-2">
+                <strong>Nome:</strong>
+                <span th:text="${residence.nome}" class="form-control"></span>
+            </div>
+            <div class="mb-2">
+                <strong >Endereço:</strong>
+                <span th:text="${residence.logradouro}" class="form-control"></span>
+            </div>
+            <div class="mb-2">
+                <strong >Bairro:</strong>
+                <span th:text="${residence.bairro}" class="form-control "></span>
+            </div>
+            <div class="mb-2">
+                <strong>Cidade:</strong>
+                <span th:text="${residence.cidade}" class="form-control"></span>
+            </div>
+            <div class="mb-2">
+                <strong>Estado:</strong>
+                <span th:text="${residence.estado}" class="form-control "></span>
+            </div>
+            <div class="mb-2">
+                <strong>Valor do Aluguel:</strong>
+                <span th:text="${residence.valorAluguel}" class="form-control "></span>
+            </div>
+        </div>
+
+        <div class="mb-2">
+            <strong>Código de Convite:</strong>
+            <input type="text" th:value="${residence.inviteCode}" class="form-control" readonly id="inviteCode">
+            <button class="btn btn-success mt-2" onclick="copiarCodigo()">Copiar Código</button>
+        </div>
+
+        <div th:if="${noResidence}">
+            <div class="text-center">
+                Está sem um lar? :( <br>Entre ou crie uma residência para administrar suas despesas
+            </div>
+            <div class="text-center pt-3">
+                <a href="/residence/create" class="btn btn-primary">Criar uma nova residência</a>
+            </div>
+            <p class="pt-3">Ou</p>
+
+            <form th:action="@{/residence/join}" method="post" class="d-flex flex-column align-items-center">
+                <div class="mb-3">
+                    <input type="text" name="inviteCode" class="form-control" placeholder="Código de Convite" required style="width: 10cm; margin: 0 auto;" />
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-secondary" style="width: 10cm; margin: 0 auto;">Entrar com Código de Convite</button>
+                </div>
+            </form>
+
+            <div th:if="${invalidInviteCode}" class="mt-4 alert alert-danger" style="width: 10cm; margin: 0 auto;">
+                O código de convite informado é inválido. Por favor, tente novamente.
+            </div>
+        </div>
+
+        <script>
+            function copiarCodigo() {
+                var codigo = document.getElementById("inviteCode").value;
+                navigator.clipboard.writeText(codigo).then(() => {
+                    alert("Código copiado: " + codigo);
+                }).catch(err => console.error("Erro ao copiar código", err));
+            }
+        </script>
 </body>
 </html>
+

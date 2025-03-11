@@ -30,6 +30,7 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "residence_id", nullable = true)
     private Residence residence;
+
     @NotNull
     @Email
     @Size(max = 255)

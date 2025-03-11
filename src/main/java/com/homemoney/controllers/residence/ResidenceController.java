@@ -23,76 +23,70 @@ public class ResidenceController {
     @Autowired
     private UserService userService;
 
-    // Rota para exibir o formulário de criação de residência
     @GetMapping("/create")
     public String createResidenceForm(Model model) {
         model.addAttribute("residence", new Residence());
-        return "residence/form"; // Aqui vai para o formulário de criação da residência
+        return "residence/form";
     }
 
-    // Rota para salvar a residência criada
     @PostMapping("/create")
     public String createResidence(@ModelAttribute Residence residence, Authentication authentication, RedirectAttributes redirectAttributes) {
         User user = userService.findByUsername(authentication.getName())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
-        // Gera o código de convite para a residência
-        String inviteCode = UUID.randomUUID().toString().substring(0, 8); // Gera um código único
-        residence.setInviteCode(inviteCode); // Associa o código à residência
 
-        // Salva a residência
+        String inviteCode = UUID.randomUUID().toString().substring(0, 8);
+        residence.setInviteCode(inviteCode);
+
         residenceService.save(residence);
 
-        // Associa a residência ao usuário
         user.setResidence(residence);
         userService.save(user);
 
-        // Adiciona o código de convite à resposta de redirecionamento
         redirectAttributes.addFlashAttribute("inviteCode", inviteCode);
 
-        // Redireciona para a página da residência
-        return "redirect:/residence/details"; // A página para exibir os detalhes da residência
+
+        return "redirect:/residence/details";
     }
 
-    // Rota para entrada com código de convite
     @PostMapping("/join")
     public String joinResidence(@RequestParam String inviteCode, Authentication authentication, Model model) {
-        // Verifica se a residência com o código de convite existe
+
         Residence residence = residenceService.findByInviteCode(inviteCode).orElse(null);
 
         if (residence != null) {
-            // Se o código for válido, associa a residência ao usuário
             User user = userService.findByUsername(authentication.getName())
                     .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
             user.setResidence(residence);
             userService.save(user);
 
-            // Redireciona para a página da residência
             model.addAttribute("residence", residence);
-            return "residence/details";  // Página que mostra a residência do usuário
+            return "residence/details";
         } else {
-            // Se o código for inválido, mostra a mensagem de erro na mesma página
             model.addAttribute("invalidInviteCode", true);
-            model.addAttribute("noResidence", true); // Para garantir que a mensagem de convite apareça
-            return "home";  // Retorna para a página inicial, mostrando o erro
+            model.addAttribute("noResidence", true);
+            return "home";
         }
     }
 
-    // Rota para exibir os detalhes da residência
     @GetMapping("/details")
     public String showResidenceDetails(Model model, Authentication authentication) {
         User user = userService.findByUsername(authentication.getName())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
-        // Se o usuário tiver uma residência, exibe os detalhes
-        model.addAttribute("residence", user.getResidence());
+        Residence residence = user.getResidence();
 
-        // Se um código de convite foi gerado e está disponível, passá-lo também para o modelo
+        if (residence != null) {
+            model.addAttribute("residence", residence);
+        } else {
+            model.addAttribute("noResidence", true);
+        }
+
         if (model.containsAttribute("inviteCode")) {
             model.addAttribute("inviteCode", model.getAttribute("inviteCode"));
         }
 
-        return "residence/details"; // Página para exibir os detalhes da residência
+        return "residence/details";
     }
 }

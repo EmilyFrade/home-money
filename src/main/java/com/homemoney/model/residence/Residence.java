@@ -52,5 +52,5 @@ public class Residence {
     @NotNull
     @Size(max = 255)
     @Column(unique = true)
-    private String inviteCode; // Código de convite para a residência
+    private String inviteCode;
 }

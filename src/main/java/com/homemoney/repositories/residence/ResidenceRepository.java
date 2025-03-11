@@ -5,6 +5,6 @@ import com.homemoney.model.residence.Residence;
 import java.util.Optional;
 
 public interface ResidenceRepository extends JpaRepository<Residence, Long> {
-    // Metodo para buscar residência por código de convite
+
     Optional<Residence> findByInviteCode(String inviteCode);
 }

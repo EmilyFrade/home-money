@@ -1,8 +1,6 @@
 package com.homemoney.controllers.user;
 
-import com.homemoney.model.residence.Residence;
 import com.homemoney.model.user.User;
-import com.homemoney.services.residence.ResidenceService;
 import com.homemoney.services.user.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,9 +16,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private ResidenceService residenceService;
-
     // Exibe tela de perfil do usuário
     @GetMapping
     public String showProfile(Authentication authentication, Model model) {
@@ -29,16 +24,14 @@ public class UserController {
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
+            model.addAttribute("user", user);
 
             if (user.getResidence() != null) {
                 // Usuário já está associado a uma residência
-                model.addAttribute("user", user);
                 model.addAttribute("residence", user.getResidence());
-                return "user/profile"; // Página do perfil do usuário
-            } else {
-                // Usuário não tem residência associada, redirecionar para a seleção
-                return "redirect:/user/chooseResidence"; // Rota para criar ou entrar em uma residência
             }
+            
+            return "user/profile";
         }
 
         return "redirect:/login";

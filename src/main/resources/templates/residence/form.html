@@ -27,7 +27,7 @@
         <form th:action="@{/residence/create}" th:object="${residence}" method="post">
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome da Residência</label>
-                <input type="text" class="form-control" th:field="*{nome}" required maxlength="255" />
+                <input type="text" class="form-control" th:field="*{nome}" maxlength="255" />
             </div>
             <div class="mb-3">
                 <label for="logradouro" class="form-label">Logradouro:</label>

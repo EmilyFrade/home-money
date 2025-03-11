@@ -1,14 +1,17 @@
 package com.homemoney.controllers.residence;
 
 import com.homemoney.model.residence.Residence;
+import com.homemoney.model.user.User;
 import com.homemoney.services.residence.ResidenceService;
-
+import com.homemoney.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/residence")
@@ -17,48 +20,73 @@ public class ResidenceController {
     @Autowired
     private ResidenceService residenceService;
 
-    @GetMapping
-    public String listResidences(Model model) {
-        List<Residence> residences = residenceService.findAll();
-        model.addAttribute("residences", residences);
-
-        return "residence/confirm";
-    }
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/create")
-    public String showCreateForm(Model model) {
+    public String createResidenceForm(Model model) {
         model.addAttribute("residence", new Residence());
-
         return "residence/form";
     }
 
-    @PostMapping
-    public String saveResidence(@ModelAttribute Residence residence) {
+    @PostMapping("/create")
+    public String createResidence(@ModelAttribute Residence residence, Authentication authentication, RedirectAttributes redirectAttributes) {
+        User user = userService.findByUsername(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+
+
+        String inviteCode = UUID.randomUUID().toString().substring(0, 8);
+        residence.setInviteCode(inviteCode);
+
         residenceService.save(residence);
 
-        return "redirect:/residence/create";
+        user.setResidence(residence);
+        userService.save(user);
+
+        redirectAttributes.addFlashAttribute("inviteCode", inviteCode);
+
+
+        return "redirect:/residence/details";
     }
 
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        Residence residence = residenceService.findById(id);
-        model.addAttribute("residence", residence);
+    @PostMapping("/join")
+    public String joinResidence(@RequestParam String inviteCode, Authentication authentication, Model model) {
 
-        return "residence/form";
+        Residence residence = residenceService.findByInviteCode(inviteCode).orElse(null);
+
+        if (residence != null) {
+            User user = userService.findByUsername(authentication.getName())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+
+            user.setResidence(residence);
+            userService.save(user);
+
+            model.addAttribute("residence", residence);
+            return "residence/details";
+        } else {
+            model.addAttribute("invalidInviteCode", true);
+            model.addAttribute("noResidence", true);
+            return "home";
+        }
     }
 
-    @PostMapping("/edit/{id}")
-    public String updateResidence(@PathVariable Long id, @ModelAttribute Residence residence) {
-        residence.setId(id);
-        residenceService.save(residence);
+    @GetMapping("/details")
+    public String showResidenceDetails(Model model, Authentication authentication) {
+        User user = userService.findByUsername(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
-        return "redirect:/residence";
-    }
+        Residence residence = user.getResidence();
 
-    @GetMapping("/delete/{id}")
-    public String deleteResidence(@PathVariable Long id) {
-        residenceService.delete(id);
+        if (residence != null) {
+            model.addAttribute("residence", residence);
+        } else {
+            model.addAttribute("noResidence", true);
+        }
 
-        return "redirect:/residence";
+        if (model.containsAttribute("inviteCode")) {
+            model.addAttribute("inviteCode", model.getAttribute("inviteCode"));
+        }
+
+        return "residence/details";
     }
 }

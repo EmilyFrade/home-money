@@ -3,8 +3,8 @@ package com.homemoney.services.user;
 import com.homemoney.model.user.User;
 import com.homemoney.repositories.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,7 +51,6 @@ public class UserService {
         if (existingUser != null) {
             existingUser.setName(updatedUser.getName());
             existingUser.setUsername(updatedUser.getUsername());
-            existingUser.setAddress(updatedUser.getAddress());
 
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
@@ -59,5 +58,9 @@ public class UserService {
 
             userRepository.save(existingUser);
         }
+    }
+
+    public List<User> findByResidence(Long residenceId) {
+        return userRepository.findByResidenceId(residenceId);
     }
 }

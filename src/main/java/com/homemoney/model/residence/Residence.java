@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -47,4 +48,9 @@ public class Residence {
 
     @NotNull
     private BigDecimal valorAluguel;
+
+    @NotNull
+    @Size(max = 255)
+    @Column(unique = true)
+    private String inviteCode;
 }

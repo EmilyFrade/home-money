@@ -2,12 +2,10 @@ package com.homemoney.services.user;
 
 import com.homemoney.model.user.User;
 import com.homemoney.repositories.user.UserRepository;
-
 import jakarta.servlet.http.HttpServletRequest;
-
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,8 +28,12 @@ public class UserService {
     }
 
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username); 
-    }    
+        return userRepository.findByUsername(username);
+    }
+
+    public void save(User user) {
+        userRepository.save(user);
+    }
 
     public void saveAndAuthenticate(User user, HttpServletRequest request) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -44,17 +46,17 @@ public class UserService {
     }
 
     public void update(Long id, User updatedUser) {
-        User existingUser = findById(id);  
-    
+        User existingUser = findById(id);
+
         if (existingUser != null) {
             existingUser.setName(updatedUser.getName());
             existingUser.setUsername(updatedUser.getUsername());
             existingUser.setAddress(updatedUser.getAddress());
-    
+
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword())); 
+                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }
-    
+
             userRepository.save(existingUser);
         }
     }

@@ -19,8 +19,7 @@ public class UserController {
     // Exibe tela de perfil do usuário
     @GetMapping
     public String showProfile(Authentication authentication, Model model) {
-        String username = authentication.getName();
-        Optional<User> userOpt = userService.findByUsername(username);
+        Optional<User> userOpt = userService.findCurrentUserByUsername(authentication);
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -62,8 +61,7 @@ public class UserController {
     // Exibe o formulário de edição de usuário
     @GetMapping("/edit/{id}")
     public String showEditForm(Authentication authentication, Model model) {
-        String username = authentication.getName();
-        Optional<User> userOpt = userService.findByUsername(username);
+        Optional<User> userOpt = userService.findCurrentUserByUsername(authentication);
         if (userOpt.isPresent()) {
             model.addAttribute("user", userOpt.get());
             return "user/editForm";

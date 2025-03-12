@@ -32,7 +32,7 @@ public class ResidenceController {
 
     @PostMapping("/create")
     public String createResidence(@ModelAttribute Residence residence, Authentication authentication, RedirectAttributes redirectAttributes) {
-        User user = userService.findByUsername(authentication.getName())
+        User user = userService.findCurrentUserByUsername(authentication)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
 
@@ -56,7 +56,7 @@ public class ResidenceController {
         Residence residence = residenceService.findByInviteCode(inviteCode).orElse(null);
 
         if (residence != null) {
-            User user = userService.findByUsername(authentication.getName())
+            User user = userService.findCurrentUserByUsername(authentication)
                     .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
             user.setResidence(residence);
@@ -73,7 +73,7 @@ public class ResidenceController {
 
     @GetMapping("/details")
     public String showResidenceDetails(Model model, Authentication authentication) {
-        User user = userService.findByUsername(authentication.getName())
+        User user = userService.findCurrentUserByUsername(authentication)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         Residence residence = user.getResidence();

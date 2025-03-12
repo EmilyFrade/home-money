@@ -16,8 +16,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String homePage(Authentication authentication, Model model) {
-        String username = authentication.getName();
-        User user = userService.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        User user = userService.findCurrentUserByUsername(authentication).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         if (user.getResidence() == null) {
 

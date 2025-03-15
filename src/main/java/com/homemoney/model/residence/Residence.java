@@ -27,33 +27,33 @@ public class Residence {
     private long id;
 
     @Size(max = 255)
-    private String nome;
+    private String name;
 
     @NotNull
     @Size(max = 255)
-    private String logradouro;
+    private String street;
 
     @NotNull
     @Size(max = 100)
-    private String bairro;
+    private String neighborhood;
 
     @NotNull
     @Size(max = 20)
-    private String cep;
+    private String zipCode;
 
     @NotNull
     @Size(max = 100)
-    private String cidade;
+    private String city;
 
     @NotNull
     @Size(max = 2)
-    private String estado;
+    private String state;
 
     @NotNull
-    private int capacidadeMaxima;
+    private int maxCapacity;
 
     @NotNull
-    private BigDecimal valorAluguel;
+    private BigDecimal rentValue;
 
     @NotNull
     @Size(max = 255)

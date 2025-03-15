@@ -11,9 +11,10 @@
     <div id="menu" th:replace="~{menu.html}"></div>
 
     <div class="container mt-4">
-        <div class="card shadow">
+        <!-- Exibe os detalhes da residência se ela existir -->
+        <div th:if="${residence != null}" class="card shadow">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h3 class="mb-0" th:text="${residence.nome}">Nome da Residência</h3>
+                <h3 class="mb-0" th:text="${residence.name}">Nome da Residência</h3>
                 <div>
                     <a th:href="@{/residence/edit/{id}(id=${residence.id})}" class="btn btn-light me-2">
                         <i class="bi bi-pencil"></i> Editar
@@ -28,17 +29,26 @@
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <h4 class="mb-3">Informações do Endereço</h4>
-                        <p><strong>Logradouro:</strong> <span th:text="${residence.logradouro}"></span></p>
-                        <p><strong>Bairro:</strong> <span th:text="${residence.bairro}"></span></p>
-                        <p><strong>CEP:</strong> <span th:text="${residence.cep}"></span></p>
-                        <p><strong>Cidade/Estado:</strong> <span th:text="${residence.cidade + '/' + residence.estado}"></span></p>
+                        <p><strong>Logradouro:</strong> <span th:text="${residence.street}"></span></p>
+                        <p><strong>Bairro:</strong> <span th:text="${residence.neighborhood}"></span></p>
+                        <p><strong>CEP:</strong> <span th:text="${residence.zipCode}"></span></p>
+                        <p><strong>Cidade/Estado:</strong> <span th:text="${residence.city + '/' + residence.state}"></span></p>
                     </div>
                     
                     <div class="col-md-6">
                         <h4 class="mb-3">Informações Gerais</h4>
-                        <p><strong>Valor do Aluguel:</strong> <span th:text="${#numbers.formatCurrency(residence.valorAluguel)}"></span></p>
-                        <p><strong>Capacidade Máxima:</strong> <span th:text="${residence.capacidadeMaxima + ' moradores'}"></span></p>
-                        <p><strong>Moradores Atuais:</strong> <span th:text="${#lists.size(residenceUsers) + ' de ' + residence.capacidadeMaxima}"></span></p>
+                        <p><strong>Valor do Aluguel:</strong> <span th:text="${#numbers.formatCurrency(residence.rentValue)}"></span></p>
+                        <p><strong>Capacidade Máxima:</strong> <span th:text="${residence.maxCapacity + ' moradores'}"></span></p>
+                        <p><strong>Moradores Atuais:</strong> <span th:text="${#lists.size(residenceUsers) + ' de ' + residence.maxCapacity}"></span></p>
+                    </div>
+                </div>
+
+                <!-- Código de Convite -->
+                <div class="mb-4">
+                    <div class="mb-2">
+                        <strong>Código de Convite:</strong>
+                        <input type="text" th:value="${residence.inviteCode}" class="form-control" readonly id="inviteCode">
+                        <button class="btn btn-success mt-2" onclick="copiarCodigo()">Copiar Código</button>
                     </div>
                 </div>
 
@@ -80,6 +90,31 @@
                 </div>
             </div>
         </div>
+
+        <!-- Exibe as opções de criar/entrar em uma residência se não houver residência -->
+        <div th:if="${noResidence}" class="card shadow">
+            <div class="card-body">
+                <div class="text-center">
+                    Está sem um lar? :( <br>Entre ou crie uma residência para administrar suas despesas
+                </div>
+                <div class="text-center pt-3">
+                    <a href="/residence/create" class="btn btn-primary">Criar uma nova residência</a>
+                    <p class="pt-3">Ou</p>
+                    <form th:action="@{/residence/join}" method="post" class="d-flex flex-column align-items-center">
+                        <div class="mb-3">
+                            <input type="text" name="inviteCode" class="form-control" placeholder="Código de Convite" required style="width: 10cm; margin: 0 auto;" />
+                        </div>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-secondary" style="width: 10cm; margin: 0 auto;">Entrar com Código de Convite</button>
+                        </div>
+                    </form>
+
+                    <div th:if="${invalidInviteCode}" class="mt-4 alert alert-danger" style="width: 10cm; margin: 0 auto;">
+                        O código de convite informado é inválido. Por favor, tente novamente.
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal de Confirmação de Exclusão -->
@@ -104,5 +139,13 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function copiarCodigo() {
+            var codigo = document.getElementById("inviteCode").value;
+            navigator.clipboard.writeText(codigo).then(() => {
+                alert("Código copiado: " + codigo);
+            }).catch(err => console.error("Erro ao copiar código", err));
+        }
+    </script>
 </body>
 </html> 

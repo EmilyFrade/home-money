@@ -77,10 +77,14 @@ public class ResidenceController {
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         Residence residence = user.getResidence();
-        List<User> residenceUsers = userService.findByResidence(residence.getId());
 
-        model.addAttribute("residence", residence);
-        model.addAttribute("residenceUsers", residenceUsers);
+        if (residence != null) {
+            List<User> residenceUsers = userService.findByResidence(residence.getId());
+            model.addAttribute("residence", residence);
+            model.addAttribute("residenceUsers", residenceUsers);
+        } else {
+            model.addAttribute("noResidence", true);
+        }
 
         return "residence/details";
     }

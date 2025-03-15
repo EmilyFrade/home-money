@@ -36,13 +36,6 @@ public class UserController {
         return "redirect:/login";
     }
 
-    // Exibe a página para escolher ou criar uma residência
-    @GetMapping("/chooseResidence")
-    public String chooseResidencePage(Model model) {
-        model.addAttribute("user", new User()); // Apenas para exibição, não precisa de um novo usuário aqui
-        return "user/chooseResidence"; // Página para o usuário decidir o que fazer
-    }
-
     // Exibe o formulário de cadastro de usuário
     @GetMapping("/create")
     public String showCreateForm(Model model) {

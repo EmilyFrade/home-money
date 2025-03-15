@@ -44,12 +44,12 @@ public class Budget {
     private Status status; 
 
     @ManyToOne
-     @NotNull
-     private Residence residence;
- 
-     @ManyToOne
-     @NotNull
-     private User creator;
+    @NotNull
+    private Residence residence;
+
+    @ManyToOne
+    @NotNull
+    private User creator;
 
     public enum Category {
         Alimentação, 

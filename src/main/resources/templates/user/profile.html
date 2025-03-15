@@ -20,9 +20,9 @@
                 <p><strong>Nome:</strong> <span th:text="${user.name}"></span></p>
                 <p><strong>Email:</strong> <span th:text="${user.username}"></span></p>
                 <p><strong>Residência:</strong> <span th:text="${residence?.id}"></span></p>
-                <p><strong>Nome:</strong> <span th:text="${residence?.nome}"></span></p>
-                <p><strong>Logradouro:</strong> <span th:text="${residence?.logradouro}"></span></p>
-                <p><strong>Cidade:</strong> <span th:text="${residence?.cidade}"></span></p>
+                <p><strong>Nome:</strong> <span th:text="${residence?.name}"></span></p>
+                <p><strong>Logradouro:</strong> <span th:text="${residence?.street}"></span></p>
+                <p><strong>Cidade:</strong> <span th:text="${residence?.city}"></span></p>
 
                 <a th:href="@{'/user/edit/' + ${user.id}}" class="btn btn-primary mt-3">Editar</a>
                 <a href="/logout" class="btn btn-danger mt-3">Sair</a>

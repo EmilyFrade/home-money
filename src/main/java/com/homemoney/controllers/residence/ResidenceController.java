@@ -32,7 +32,7 @@ public class ResidenceController {
 
     @PostMapping("/create")
     public String createResidence(@ModelAttribute Residence residence, Authentication authentication, RedirectAttributes redirectAttributes) {
-        User user = userService.findByUsername(authentication.getName())
+        User user = userService.findCurrentUserByUsername(authentication)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
 
@@ -56,14 +56,14 @@ public class ResidenceController {
         Residence residence = residenceService.findByInviteCode(inviteCode).orElse(null);
 
         if (residence != null) {
-            User user = userService.findByUsername(authentication.getName())
+            User user = userService.findCurrentUserByUsername(authentication)
                     .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
             user.setResidence(residence);
             userService.save(user);
 
             model.addAttribute("residence", residence);
-            return "residence/details";
+            return "redirect:/residence/details";
         } else {
             model.addAttribute("invalidInviteCode", true);
             model.addAttribute("noResidence", true);
@@ -73,14 +73,18 @@ public class ResidenceController {
 
     @GetMapping("/details")
     public String showResidenceDetails(Model model, Authentication authentication) {
-        User user = userService.findByUsername(authentication.getName())
+        User user = userService.findCurrentUserByUsername(authentication)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         Residence residence = user.getResidence();
-        List<User> residenceUsers = userService.findByResidence(residence.getId());
 
-        model.addAttribute("residence", residence);
-        model.addAttribute("residenceUsers", residenceUsers);
+        if (residence != null) {
+            List<User> residenceUsers = userService.findByResidence(residence.getId());
+            model.addAttribute("residence", residence);
+            model.addAttribute("residenceUsers", residenceUsers);
+        } else {
+            model.addAttribute("noResidence", true);
+        }
 
         return "residence/details";
     }

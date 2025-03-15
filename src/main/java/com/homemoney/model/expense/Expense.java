@@ -2,12 +2,15 @@ package com.homemoney.model.expense;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.homemoney.model.residence.Residence;
 import com.homemoney.model.user.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,6 +18,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -48,8 +52,6 @@ public class Expense {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod; 
 
-    private Boolean isShared; // adicionar campo dos usuários da despesa
-
     @NotNull
     @Enumerated(EnumType.STRING)
     private Status status; 
@@ -61,6 +63,9 @@ public class Expense {
     @ManyToOne
     @NotNull
     private User creator;
+
+    @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ExpenseShare> expenseShares = new HashSet<>();
 
     public enum Category {
         Alimentação, 
@@ -84,5 +89,33 @@ public class Expense {
         Pendente, 
         Paga, 
         Vencida;
+    }
+
+    public void addParticipant(User user, BigDecimal valueShare) {
+        ExpenseShare share = new ExpenseShare();
+        share.setExpense(this);
+        share.setUser(user);
+        share.setValueShare(valueShare);
+        share.setStatus(ExpenseShare.Status.PENDENTE);
+        share.setValuePaid(BigDecimal.ZERO);
+        this.expenseShares.add(share);
+    }
+
+    public void clearShares() {
+        this.expenseShares.clear();
+    }
+
+    public void registerPayment(User user, BigDecimal value, User paidBy) {
+        expenseShares.stream()
+            .filter(share -> share.getUser().equals(user))
+            .findFirst()
+            .ifPresent(share -> {
+                share.setValuePaid(value);
+                share.setPaidBy(paidBy);
+                share.setPaymentDate(LocalDate.now());
+                share.setStatus(paidBy.equals(user) ? 
+                    ExpenseShare.Status.PAGO : 
+                    ExpenseShare.Status.REEMBOLSADO);
+            });
     }
 }

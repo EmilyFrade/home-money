@@ -27,8 +27,9 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public Optional<User> findCurrentUserByUsername(Authentication authentication) {
+        String username = authentication.getName(); 
+        return userRepository.findByUsername(username); 
     }
 
     public void save(User user) {

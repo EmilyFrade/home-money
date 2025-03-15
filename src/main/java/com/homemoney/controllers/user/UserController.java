@@ -19,8 +19,7 @@ public class UserController {
     // Exibe tela de perfil do usuário
     @GetMapping
     public String showProfile(Authentication authentication, Model model) {
-        String username = authentication.getName();
-        Optional<User> userOpt = userService.findByUsername(username);
+        Optional<User> userOpt = userService.findCurrentUserByUsername(authentication);
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -35,13 +34,6 @@ public class UserController {
         }
 
         return "redirect:/login";
-    }
-
-    // Exibe a página para escolher ou criar uma residência
-    @GetMapping("/chooseResidence")
-    public String chooseResidencePage(Model model) {
-        model.addAttribute("user", new User()); // Apenas para exibição, não precisa de um novo usuário aqui
-        return "user/chooseResidence"; // Página para o usuário decidir o que fazer
     }
 
     // Exibe o formulário de cadastro de usuário
@@ -62,8 +54,7 @@ public class UserController {
     // Exibe o formulário de edição de usuário
     @GetMapping("/edit/{id}")
     public String showEditForm(Authentication authentication, Model model) {
-        String username = authentication.getName();
-        Optional<User> userOpt = userService.findByUsername(username);
+        Optional<User> userOpt = userService.findCurrentUserByUsername(authentication);
         if (userOpt.isPresent()) {
             model.addAttribute("user", userOpt.get());
             return "user/editForm";

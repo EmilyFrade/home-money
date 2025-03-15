@@ -26,40 +26,40 @@
         <h3 class="text-center">Cadastro de Residência</h3>
         <form th:action="@{/residence/create}" th:object="${residence}" method="post">
             <div class="mb-3">
-                <label for="nome" class="form-label">Nome da Residência</label>
-                <input type="text" class="form-control" th:field="*{nome}" maxlength="255" />
+                <label for="name" class="form-label">Nome da Residência</label>
+                <input type="text" class="form-control" th:field="*{name}" maxlength="255" />
             </div>
             <div class="mb-3">
-                <label for="logradouro" class="form-label">Logradouro:</label>
-                <input type="text" class="form-control" th:field="*{logradouro}" required maxlength="255" />
+                <label for="street" class="form-label">Logradouro:</label>
+                <input type="text" class="form-control" th:field="*{street}" required maxlength="255" />
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="bairro" class="form-label">Bairro:</label>
-                    <input type="text" class="form-control" th:field="*{bairro}" required maxlength="100" />
+                    <label for="neighborhood" class="form-label">Bairro:</label>
+                    <input type="text" class="form-control" th:field="*{neighborhood}" required maxlength="100" />
                 </div>
                 <div class="col-md-6">
-                    <label for="cep" class="form-label">CEP:</label>
-                    <input type="text" class="form-control" th:field="*{cep}" required maxlength="10" />
+                    <label for="zipCode" class="form-label">CEP:</label>
+                    <input type="text" class="form-control" th:field="*{zipCode}" required maxlength="10" />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="cidade" class="form-label">Cidade:</label>
-                    <input type="text" class="form-control" th:field="*{cidade}" required maxlength="100" />
+                    <label for="city" class="form-label">Cidade:</label>
+                    <input type="text" class="form-control" th:field="*{city}" required maxlength="100" />
                 </div>
                 <div class="col-md-6">
-                    <label for="estado" class="form-label">Estado:</label>
-                    <input type="text" class="form-control" th:field="*{estado}" required maxlength="2" />
+                    <label for="state" class="form-label">Estado:</label>
+                    <input type="text" class="form-control" th:field="*{state}" required maxlength="2" />
                 </div>
             </div>
             <div class="mb-3">
-                <label for="valorAluguel" class="form-label">Valor do Aluguel:</label>
-                <input type="number" class="form-control" th:field="*{valorAluguel}" step="0.01" required min="0.01" />
+                <label for="rentValue" class="form-label">Valor do Aluguel:</label>
+                <input type="number" class="form-control" th:field="*{rentValue}" step="0.01" required min="0.01" />
             </div>
             <div class="mb-3">
-                <label for="capacidade" class="form-label">Capacidade de Moradores:</label>
-                <input type="number" class="form-control" th:field="*{capacidadeMaxima}" required min="1" />
+                <label for="maxCapacity" class="form-label">Capacidade de Moradores:</label>
+                <input type="number" class="form-control" th:field="*{maxCapacity}" required min="1" />
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-success">Salvar</button>

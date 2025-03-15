@@ -33,9 +33,9 @@
 
     <div th:if="${residence}">
         <h3 class="mt-4">Sua Residência</h3>
-        <p>Nome: <span th:text="${residence.nome}"></span></p>
-        <p>Endereço: <span th:text="${residence.logradouro + ', ' + residence.bairro + ', ' + residence.cidade + ', ' + residence.estado}"></span></p>
-        <p>Valor do Aluguel: <span th:text="${residence.valorAluguel}"></span></p>
+        <p>Nome: <span th:text="${residence.name}"></span></p>
+        <p>Endereço: <span th:text="${residence.street + ', ' + residence.neighborhood + ', ' + residence.city + ', ' + residence.state}"></span></p>
+        <p>Valor do Aluguel: R$ <span th:text="${#numbers.formatDecimal(residence.rentValue, 1, 'POINT', 2, 'COMMA')}"></span></p>
     </div>
 
 </div>

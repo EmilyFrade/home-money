@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Despesa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{menu.html}"></div>
+
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="mb-0" th:text="${expense.description}">Despesa</h3>
+                <div>
+                    <a th:href="@{/expense/edit/{id}(id=${expense.id})}" class="btn btn-light me-2">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                        <i class="bi bi-trash"></i> Excluir
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Informações Gerais</h5>
+                        <p><strong>Valor Total:</strong> R$ <span th:text="${#numbers.formatDecimal(expense.value, 1, 'POINT', 2, 'COMMA')}"></span></p>
+                        <p><strong>Categoria:</strong> <span class="badge bg-info" th:text="${expense.category}"></span></p>
+                        <p><strong>Status:</strong> 
+                            <span th:class="${'badge ' + 
+                                (expense.status.name() == 'Paga' ? 'bg-success' : 
+                                (expense.status.name() == 'Vencida' ? 'bg-danger' : 'bg-warning'))}"
+                                th:text="${expense.status}">
+                            </span>
+                        </p>
+                        <p><strong>Criado por:</strong> <span th:text="${expense.creator.name}"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Datas e Pagamento</h5>
+                        <p><strong>Data de Vencimento:</strong> <span th:text="${T(com.homemoney.utils.DateUtils).formatToBrazilianDate(expense.expirationDate)}"></span></p>
+                        <p><strong>Data de Pagamento:</strong> <span th:text="${expense.paymentDate != null ? T(com.homemoney.utils.DateUtils).formatToBrazilianDate(expense.paymentDate) : 'Não pago'}"></span></p>
+                        <p><strong>Forma de Pagamento:</strong> <span th:text="${expense.paymentMethod ?: 'Não definido'}"></span></p>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Divisão da Despesa</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Participante</th>
+                                        <th>Valor</th>
+                                        <th>Status</th>
+                                        <th>Data Pagamento</th>
+                                        <th>Pago por</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="share : ${expense.expenseShares}">
+                                        <td th:text="${share.user.name}"></td>
+                                        <td>R$ <span th:text="${#numbers.formatDecimal(share.valueShare, 1, 'POINT', 2, 'COMMA')}"></span></td>
+                                        <td>
+                                            <span th:class="${'badge ' + 
+                                                (share.status.name() == 'PAGO' ? 'bg-success' : 
+                                                (share.status.name() == 'REEMBOLSADO' ? 'bg-info' : 'bg-warning'))}"
+                                                th:text="${share.status}">
+                                            </span>
+                                        </td>
+                                        <td th:text="${share.paymentDate != null ? T(com.homemoney.utils.DateUtils).formatToBrazilianDate(share.paymentDate) : '-'}"></td>
+                                        <td th:text="${share.paidBy?.name ?: '-'}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja excluir esta despesa?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form th:action="@{/expense/delete/{id}(id=${expense.id})}" method="get">
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmDelete() {
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+    </script>
+</body>
+</html> 

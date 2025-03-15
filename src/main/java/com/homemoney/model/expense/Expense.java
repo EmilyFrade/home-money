@@ -64,7 +64,7 @@ public class Expense {
     @NotNull
     private User creator;
 
-    @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ExpenseShare> expenseShares = new HashSet<>();
 
     public enum Category {
@@ -96,7 +96,13 @@ public class Expense {
         share.setExpense(this);
         share.setUser(user);
         share.setValueShare(valueShare);
-        expenseShares.add(share);
+        share.setStatus(ExpenseShare.Status.PENDENTE);
+        share.setValuePaid(BigDecimal.ZERO);
+        this.expenseShares.add(share);
+    }
+
+    public void clearShares() {
+        this.expenseShares.clear();
     }
 
     public void registerPayment(User user, BigDecimal value, User paidBy) {

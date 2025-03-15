@@ -63,7 +63,7 @@ public class ResidenceController {
             userService.save(user);
 
             model.addAttribute("residence", residence);
-            return "residence/details";
+            return "redirect:/residence/details";
         } else {
             model.addAttribute("invalidInviteCode", true);
             model.addAttribute("noResidence", true);

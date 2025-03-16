@@ -6,14 +6,53 @@
     <title>Detalhes da Residência</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #111f0d;
+            color: #000000;
+        }
+        .card {
+            background-color: #213d1b;
+            color: #000000;
+            border: none;
+        }
+        .card-header {
+            background-color: #325c28;
+            color: #000000;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #427a36;
+            border-color: #325c28;
+        }
+        .btn-primary:hover {
+            background-color: #325c28;
+            border-color: #213d1b;
+        }
+        .btn-danger {
+            background-color: #a83232;
+            border-color: #7a2626;
+        }
+        .btn-danger:hover {
+            background-color: #7a2626;
+            border-color: #541b1b;
+        }
+        .table th {
+            background-color: #325c28;
+            color: #000000;
+        }
+        .table td {
+            background-color: #213d1b;
+            color: #000000;
+        }
+    </style>
 </head>
 <body>
     <div id="menu" th:replace="~{menu.html}"></div>
 
     <div class="container mt-4">
-        <!-- Exibe os detalhes da residência se ela existir -->
         <div th:if="${residence != null}" class="card shadow">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="mb-0" th:text="${residence.name}">Nome da Residência</h3>
                 <div>
                     <a th:href="@{/residence/edit/{id}(id=${residence.id})}" class="btn btn-light me-2">
@@ -24,7 +63,6 @@
                     </button>
                 </div>
             </div>
-            
             <div class="card-body">
                 <div class="row mb-4">
                     <div class="col-md-6">
@@ -43,16 +81,12 @@
                     </div>
                 </div>
 
-                <!-- Código de Convite -->
                 <div class="mb-4">
-                    <div class="mb-2">
-                        <strong>Código de Convite:</strong>
-                        <input type="text" th:value="${residence.inviteCode}" class="form-control" readonly id="inviteCode">
-                        <button class="btn btn-success mt-2" onclick="copiarCodigo()">Copiar Código</button>
-                    </div>
+                    <strong>Código de Convite:</strong>
+                    <input type="text" th:value="${residence.inviteCode}" class="form-control bg-light text-dark" readonly id="inviteCode">
+                    <button class="btn btn-success mt-2" onclick="copiarCodigo()">Copiar Código</button>
                 </div>
 
-                <!-- Seção de Moradores -->
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card">
@@ -91,25 +125,17 @@
             </div>
         </div>
 
-        <!-- Exibe as opções de criar/entrar em uma residência se não houver residência -->
         <div th:if="${noResidence}" class="card shadow">
-            <div class="card-body">
-                <div class="text-center">
-                    Está sem um lar? :( <br>Entre ou crie uma residência para administrar suas despesas
-                </div>
-                <div class="text-center pt-3">
+            <div class="card-body text-center">
+                Está sem um lar? :( <br>Entre ou crie uma residência para administrar suas despesas
+                <div class="pt-3">
                     <a href="/residence/create" class="btn btn-primary">Criar uma nova residência</a>
                     <p class="pt-3">Ou</p>
-                    <form th:action="@{/residence/join}" method="post" class="d-flex flex-column align-items-center">
-                        <div class="mb-3">
-                            <input type="text" name="inviteCode" class="form-control" placeholder="Código de Convite" required style="width: 10cm; margin: 0 auto;" />
-                        </div>
-                        <div class="mb-3">
-                            <button type="submit" class="btn btn-secondary" style="width: 10cm; margin: 0 auto;">Entrar com Código de Convite</button>
-                        </div>
+                    <form th:action="@{/residence/join}" method="post">
+                        <input type="text" name="inviteCode" class="form-control mb-3 bg-light text-dark" placeholder="Código de Convite" required style="width: 10cm; margin: auto;">
+                        <button type="submit" class="btn btn-secondary" style="width: 10cm; margin: auto;">Entrar com Código de Convite</button>
                     </form>
-
-                    <div th:if="${invalidInviteCode}" class="mt-4 alert alert-danger" style="width: 10cm; margin: 0 auto;">
+                    <div th:if="${invalidInviteCode}" class="mt-4 alert alert-danger" style="width: 10cm; margin: auto;">
                         O código de convite informado é inválido. Por favor, tente novamente.
                     </div>
                 </div>
@@ -117,7 +143,6 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Exclusão -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -130,7 +155,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form th:action="@{/residence/delete/{id}(id=${residence.id})}" method="post" style="display: inline;">
+                    <form th:action="@{/residence/delete/{id}(id=${residence.id})}" method="post">
                         <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
                     </form>
                 </div>
@@ -138,7 +163,6 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function copiarCodigo() {
             var codigo = document.getElementById("inviteCode").value;
@@ -148,4 +172,4 @@
         }
     </script>
 </body>
-</html> 
+</html>

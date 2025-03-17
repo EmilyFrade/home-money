@@ -8,124 +8,200 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
-            background-color: #111f0d;
-            color: #000000;
+            background-color: #f8f9fa;
+            color: #333;
         }
+
         .card {
-            background-color: #213d1b;
-            color: #000000;
             border: none;
+            border-radius: 10px;
         }
+
         .card-header {
-            background-color: #325c28;
-            color: #000000;
+            background-color: #ffffff;
+            color: white;
             font-weight: bold;
+            border-radius: 10px 10px 0 0;
         }
+
+        .card-body {
+            background-color: #ffffff;
+        }
+
         .btn-primary {
-            background-color: #427a36;
-            border-color: #325c28;
+            background-color: #ffffff;
+            border-color: #ffffff;
         }
+
         .btn-primary:hover {
-            background-color: #325c28;
-            border-color: #213d1b;
+            background-color: #218838;
+            border-color: #1e7e34;
         }
+
         .btn-danger {
-            background-color: #a83232;
-            border-color: #7a2626;
+            background-color: #dc3545;
+            border-color: #dc3545;
         }
+
         .btn-danger:hover {
-            background-color: #7a2626;
-            border-color: #541b1b;
+            background-color: #c82333;
+            border-color: #bd2130;
         }
+
         .table th {
-            background-color: #325c28;
-            color: #000000;
+            background-color: #ffffff;
+            color: white;
         }
+
         .table td {
-            background-color: #213d1b;
-            color: #000000;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .profile-section {
+            padding-top: 20px;
+        }
+
+        .bg-green {
+            background-color: #ffffff;
+            color: white;
+        }
+
+        .header-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            padding: 8px 16px;
+            margin-top: 20px;
+        }
+
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+
+        .content-section {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button {
+            font-size: 14px;
+            color: #204720;
+            background: transparent;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .residence-info, .residence-users {
+            display: inline-block;
+            vertical-align: top;
+            width: 48%;
+            margin-right: 2%;
+        }
+
+        .residence-users {
+            width: 48%;
+            margin-left: 2%;
+        }
+
+        .btn-edit-container {
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="menu" th:replace="~{menu.html}"></div>
 
     <div class="container mt-4">
-        <div th:if="${residence != null}" class="card shadow">
+
+        <div th:if="${residence != null}" class="card shadow-sm mt-4">
+            
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="mb-0" th:text="${residence.name}">Nome da Residência</h3>
-                <div>
-                    <a th:href="@{/residence/edit/{id}(id=${residence.id})}" class="btn btn-light me-2">
-                        <i class="bi bi-pencil"></i> Editar
-                    </a>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                        <i class="bi bi-trash"></i> Excluir
-                    </button>
-                </div>
+                <button class="back-button" href="/home">
+                    <i class="bi bi-arrow-left-circle" style="font-size: 1.5rem;"></i> <span style="font-size: 1.5rem;">Voltar ao início</span>
+                </button>
             </div>
+
             <div class="card-body">
-                <div class="row mb-4">
+                <div class="content-section row">
+                    <!-- Informações da Residência -->
                     <div class="col-md-6">
-                        <h4 class="mb-3">Informações do Endereço</h4>
-                        <p><strong>Logradouro:</strong> <span th:text="${residence.street}"></span></p>
-                        <p><strong>Bairro:</strong> <span th:text="${residence.neighborhood}"></span></p>
-                        <p><strong>CEP:</strong> <span th:text="${residence.zipCode}"></span></p>
-                        <p><strong>Cidade/Estado:</strong> <span th:text="${residence.city + '/' + residence.state}"></span></p>
+                        <div class="residence-info">
+                            <h4 class="header-text">Informações da Residência</h4>
+                            <p><strong>Endereço:</strong> <span th:text="${residence.street}"></span>, <span th:text="${residence.neighborhood}"></span></p>
+                            <p><strong>CEP:</strong> <span th:text="${residence.zipCode}"></span></p>
+                            <p><strong>Cidade/Estado:</strong> <span th:text="${residence.city + '/' + residence.state}"></span></p>
+                            <p><strong>Valor do Aluguel:</strong> <span th:text="${#numbers.formatCurrency(residence.rentValue)}"></span></p>
+                            <p><strong>Capacidade Máxima:</strong> <span th:text="${residence.maxCapacity}"></span></p>
+                            <p><strong>Moradores Atuais:</strong> <span th:text="${#lists.size(residenceUsers)}"></span></p>
+            
+                            <hr>
+            
+                            <h4 class="header-text">Código de Convite</h4>
+                            <input type="text" th:value="${residence.inviteCode}" class="form-control bg-light text-dark" readonly id="inviteCode">
+                            <button class="btn btn-success mt-2" onclick="copiarCodigo()">Copiar Código</button>
+                        </div>
                     </div>
-                    
+            
+                    <!-- Tabela de Moradores -->
                     <div class="col-md-6">
-                        <h4 class="mb-3">Informações Gerais</h4>
-                        <p><strong>Valor do Aluguel:</strong> <span th:text="${#numbers.formatCurrency(residence.rentValue)}"></span></p>
-                        <p><strong>Capacidade Máxima:</strong> <span th:text="${residence.maxCapacity + ' moradores'}"></span></p>
-                        <p><strong>Moradores Atuais:</strong> <span th:text="${#lists.size(residenceUsers) + ' de ' + residence.maxCapacity}"></span></p>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <strong>Código de Convite:</strong>
-                    <input type="text" th:value="${residence.inviteCode}" class="form-control bg-light text-dark" readonly id="inviteCode">
-                    <button class="btn btn-success mt-2" onclick="copiarCodigo()">Copiar Código</button>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header bg-light">
-                                <h4 class="mb-0">Moradores</h4>
+                        <div class="residence-users">
+                            <h4 class="header-text">Moradores</h4>
+                            <div th:if="${#lists.isEmpty(residenceUsers)}" class="alert alert-info">
+                                Nenhum morador registrado nesta residência.
                             </div>
-                            <div class="card-body">
-                                <div th:if="${#lists.isEmpty(residenceUsers)}" class="alert alert-info">
-                                    Nenhum morador registrado nesta residência.
-                                </div>
-                                <div th:unless="${#lists.isEmpty(residenceUsers)}" class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Nome</th>
-                                                <th>Email</th>
-                                                <th>Data de Entrada</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr th:each="user : ${residenceUsers}">
-                                                <td>
-                                                    <i class="bi bi-person-circle me-2"></i>
-                                                    <span th:text="${user.name}"></span>
-                                                </td>
-                                                <td th:text="${user.username}"></td>
-                                                <td th:text="${#temporals.format(user.registrationDate, 'dd/MM/yyyy')}"></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <div th:unless="${#lists.isEmpty(residenceUsers)}" class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Email</th>
+                                            <th>Data de Entrada</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="user : ${residenceUsers}">
+                                            <td th:text="${user.name}"></td>
+                                            <td th:text="${user.username}"></td>
+                                            <td th:text="${#temporals.format(user.registrationDate, 'dd/MM/yyyy')}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
+            
+                <!-- Botões Editar e Excluir ao lado do código de convite -->
+                <div class="d-flex justify-content-between mt-4">
+                    <div>
+                        <a th:href="@{/residence/edit/{id}(id=${residence.id})}" class="btn btn-light me-2">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="bi bi-trash"></i> Excluir
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
+            
+            
 
-        <div th:if="${noResidence}" class="card shadow">
+        <div th:if="${noResidence}" class="card shadow-sm mt-4">
             <div class="card-body text-center">
                 Está sem um lar? :( <br>Entre ou crie uma residência para administrar suas despesas
                 <div class="pt-3">

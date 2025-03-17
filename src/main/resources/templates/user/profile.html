@@ -5,30 +5,154 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil do Usuário</title>
-    <!-- Link para o Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #204720;
+        }
+
+        .profile-button {
+            background: #204720;
+            box-shadow: none;
+            border: none;
+        }
+
+        .profile-button:hover {
+            background: #204720;
+        }
+
+        .profile-button:focus {
+            background: #204720;
+            box-shadow: none;
+        }
+
+        .profile-button:active {
+            background: #204720;
+            box-shadow: none;
+        }
+
+        .back:hover {
+            color: #204720;
+            cursor: pointer;
+        }
+
+        .labels {
+            font-size: 12px;
+            color: #598061;
+        }
+
+        .add-experience:hover {
+            background: #204720;
+            color: #fff;
+            cursor: pointer;
+            border: solid 1px #3d7e58;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            margin-top: 5rem;
+        }
+
+        .card-header {
+            font-weight: bold;
+            background-color: #204720;
+            color: #fff;
+            border-radius: 8px 8px 0 0;
+            padding: 1rem;
+        }
+
+        .rounded-circle {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border: 3px solid #204720;
+        }
+
+        .back-button {
+            font-size: 14px;
+            color: #204720;
+            background: transparent;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
-<body class="d-flex flex-column" style="height: 100vh;">
-    <div th:replace="~{menu.html}"></div>
+<body>
 
-    <div class="container-fluid p-4">
-        <div class="card mx-auto" style="max-width: 600px;">
-            <div class="card-body">
-                <h3 class="card-title mb-4">Perfil do Usuário</h3>
-                <p><strong>Nome:</strong> <span th:text="${user.name}"></span></p>
-                <p><strong>Email:</strong> <span th:text="${user.username}"></span></p>
-                <p><strong>Residência:</strong> <span th:text="${residence?.id}"></span></p>
-                <p><strong>Nome:</strong> <span th:text="${residence?.name}"></span></p>
-                <p><strong>Logradouro:</strong> <span th:text="${residence?.street}"></span></p>
-                <p><strong>Cidade:</strong> <span th:text="${residence?.city}"></span></p>
+    <div class="container">
+        <!-- Botão de Voltar -->
+        <button class="back-button" href="/home">
+            <i class="bi bi-arrow-left-circle" style="font-size: 1.5rem;"></i> <span style="font-size: 1.5rem;">Voltar ao início</span>
+        </button>
 
-                <a th:href="@{'/user/edit/' + ${user.id}}" class="btn btn-primary mt-3">Editar</a>
-                <a href="/logout" class="btn btn-danger mt-3">Sair</a>
+        <div class="row">
+            <!-- Coluna de foto e nome -->
+            <div class="col-md-3 text-center pt-5">
+                <!-- Imagem de Perfil do Usuário -->
+                <img class="rounded-circle " src="data:image/jpeg;base64,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" alt="Imagem de Perfil">
+                <h3 th:text="${user.name}">Nome do Usuário</h3>
+                <span class="text-black-50" th:text="${user.username}">email@example.com</span>
+            </div>
+
+            <!-- Coluna com dados do perfil e configurações -->
+            <div class="col-md-5 border-right">
+                <div class="p-3 py-5">
+                    <h4 class="text-right">Configurações do Perfil</h4>
+                    <div class="row mt-2">
+                        <div class="col-md-12">
+                            <label class="labels">Nome</label>
+                            <input type="text" class="form-control" th:value="${user.name}" placeholder="Nome do usuário" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <label class="labels">Email</label>
+                            <input type="email" class="form-control" th:value="${user.username}" placeholder="Digite seu email" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <label class="labels">Nome da Residência</label>
+                            <input type="text" class="form-control" th:value="${residence.name}" placeholder="Nome da residência" readonly>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Logradouro</label>
+                            <input type="text" class="form-control" th:value="${residence.street}" placeholder="Logradouro da residência" readonly>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Cidade</label>
+                            <input type="text" class="form-control" th:value="${residence.city}" placeholder="Cidade da residência" readonly>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 text-center">
+                        <a href="/user/edit" class="btn btn-primary profile-button">Editar</a>
+                        <a href="/logout" class="btn btn-danger profile-button">Sair</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

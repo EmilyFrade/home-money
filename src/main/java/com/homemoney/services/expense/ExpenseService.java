@@ -14,8 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -103,5 +107,67 @@ public class ExpenseService {
         }
 
         expense.getExpenseShares().add(share);
+    }
+
+    public BigDecimal calculateTotalExpensesThisMonth(User user) {
+    LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
+    LocalDate endOfMonth = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
+
+    List<Expense> expenses = expenseRepository.findByCreatorAndPaymentDateBetween(user, startOfMonth, endOfMonth);
+
+    return expenses.stream()
+            .map(Expense::getValue)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal calculateAverageMonthlyExpense(User user) {
+        LocalDate startDate = LocalDate.now().minusMonths(6);
+        LocalDate endDate = LocalDate.now();
+
+        List<Expense> expenses = expenseRepository.findByCreatorAndPaymentDateBetween(user, startDate, endDate);
+        BigDecimal total = expenses.stream()
+                .map(Expense::getValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return total.divide(BigDecimal.valueOf(6), 2, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal calculateTotalSharedExpenses(User user) {
+        List<Expense> sharedExpenses = expenseRepository.findByExpenseSharesUser(user);
+        return sharedExpenses.stream()
+                .map(Expense::getValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public Map<Expense.Category, BigDecimal> getExpensesByCategory(User user) {
+        List<Expense> expenses = expenseRepository.findByCreator(user);
+        return expenses.stream()
+                .collect(Collectors.groupingBy(
+                    Expense::getCategory,
+                    Collectors.reducing(BigDecimal.ZERO, Expense::getValue, BigDecimal::add)
+                ));
+    }
+
+    public Map<String, BigDecimal> getMonthlyExpenses(User user) {
+        LocalDate startDate = LocalDate.now().minusMonths(6);
+        LocalDate endDate = LocalDate.now();
+
+        List<Expense> expenses = expenseRepository.findByCreatorAndPaymentDateBetween(user, startDate, endDate);
+        Map<String, BigDecimal> monthlyExpenses = new LinkedHashMap<>();
+
+        for (int i = 0; i < 6; i++) {
+            LocalDate monthStart = startDate.plusMonths(i);
+            LocalDate monthEnd = monthStart.withDayOfMonth(monthStart.lengthOfMonth());
+
+            BigDecimal total = expenses.stream()
+                    .filter(expense -> !expense.getPaymentDate().isBefore(monthStart) &&
+                                    !expense.getPaymentDate().isAfter(monthEnd))
+                    .map(Expense::getValue)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            monthlyExpenses.put(monthStart.getMonth().toString(), total);
+        }
+
+        return monthlyExpenses;
     }
 }

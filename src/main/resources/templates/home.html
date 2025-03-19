@@ -4,43 +4,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Money</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%23145A32" fill-opacity="1" d="M0,160L80,144C160,128,320,96,480,96C640,96,800,128,960,149.3C1120,171,1280,181,1360,186.7L1440,192L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z"></path></svg>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+        
+        .typing-effect {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fafafa;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #fafafa;
+            display: inline-block;
+        }
+        
+        .fixed-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    </style>
 </head>
 <body>
-
-<div th:replace="~{menu.html}"></div>
-
-<div class="text-center">
-    <h1 class="text-4xl font-bold">Bem-vindo ao home money!</h1>
-
-    <div th:if="${noResidence}">
-        <p class="mt-4">Você ainda não possui uma residência associada.</p>
-        <a href="/residence/create" class="btn btn-primary">Criar uma nova residência</a>
-        <p class="pt-3">Ou</p>
-
-        <form th:action="@{/residence/join}" method="post" class="d-flex flex-column align-items-center">
-            <div class="mb-3">
-                <input type="text" name="inviteCode" class="form-control" placeholder="Código de Convite" required style="width: 10cm; margin: 0 auto;" />
+    
+    <div class="container mt-4">
+        <div class="row g-4">
+            <div class="col-12 text-center">
+                <h1 class="typing-effect" id="typing-text"></h1>
             </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-secondary" style="width: 10cm; margin: 0 auto;">Entrar com Código de Convite</button>
+            
+            <div class="col-md-6 col-lg-4" th:if="${noResidence}">
+                <div class="card p-4 text-center fixed-card">
+                    <p class="fw-semibold">Você está sem lar :/</p>
+                    <a href="/residence/create" class="btn btn-success w-100">Criar uma nova residência</a>
+                    <p class="pt-3 fw-semibold">Ou</p>
+                    <form th:action="@{/residence/join}" method="post">
+                        <input type="text" name="inviteCode" class="form-control mb-3 text-center" placeholder="Código de Convite" required />
+                        <button type="submit" class="btn btn-secondary w-100">Entrar com Código de Convite</button>
+                    </form>
+                    <div th:if="${invalidInviteCode}" class="mt-3 alert alert-danger">
+                        O código de convite informado é inválido. Por favor, tente novamente.
+                    </div>
+                </div>
             </div>
-        </form>
-
-        <div th:if="${invalidInviteCode}" class="mt-4 alert alert-danger" style="width: 10cm; margin: 0 auto;">
-            O código de convite informado é inválido. Por favor, tente novamente.
+            
+            <div class="col-md-6 col-lg-4" th:if="${user}">
+                <div class="card p-4 text-center fixed-card">
+                    <h3 class="text-success fw-bold">Você</h3>
+                    <p><strong>Nome:</strong> <span th:text="${user.name}"></span></p>
+                    <p><strong>E-mail:</strong> <span th:text="${user.username}"></span></p>
+                    <a th:href="@{/user}" class="btn btn-success w-100 mt-3">Gerenciar Perfil</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4" th:if="${residence}">
+                <div class="card p-4 text-center fixed-card">
+                    <h3 class="text-success fw-bold">Sua Residência</h3>
+                    <p><strong>Nome:</strong> <span th:text="${residence.name}"></span></p>
+                    <p><strong>Endereço:</strong> <span th:text="${residence.street + ', ' + residence.neighborhood + ', ' + residence.city + ', ' + residence.state}"></span></p>
+                    <p><strong>Valor do Aluguel:</strong> R$ <span th:text="${#numbers.formatDecimal(residence.rentValue, 1, 'POINT', 2, 'COMMA')}"></span></p>
+                    <a th:href="@{/residence/details}" class="btn btn-success w-100 mt-3">Mais Informações</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="card p-4 text-center fixed-card">
+                    <h3 class="text-success fw-bold">Suas Despesas</h3>
+                    <p>Visualize suas despesas</p>
+                    <p>Crie novas despesas</p>
+                    <a th:href="@{/expense}" class="btn btn-success w-100 mt-3">Mais Informações</a>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div th:if="${residence}">
-        <h3 class="mt-4">Sua Residência</h3>
-        <p>Nome: <span th:text="${residence.name}"></span></p>
-        <p>Endereço: <span th:text="${residence.street + ', ' + residence.neighborhood + ', ' + residence.city + ', ' + residence.state}"></span></p>
-        <p>Valor do Aluguel: R$ <span th:text="${#numbers.formatDecimal(residence.rentValue, 1, 'POINT', 2, 'COMMA')}"></span></p>
-    </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const text = "Bem-vindo ao Home Money!";
+            let index = 0;
+            const typingElement = document.getElementById("typing-text");
+            
+            function typeEffect() {
+                if (index < text.length) {
+                    typingElement.innerHTML += text.charAt(index);
+                    index++;
+                    setTimeout(typeEffect, 100);
+                } else {
+                    typingElement.style.borderRight = "none";
+                }
+            }
+            
+            typeEffect();
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
 </body>
 </html>

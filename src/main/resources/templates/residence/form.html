@@ -6,6 +6,11 @@
     <title>Cadastrar Residência</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
         .form-container {
             max-width: 600px;
             margin: 100px auto;
@@ -15,54 +20,71 @@
             border-radius: 5px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        .btn-large {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
 
-<div id="menu" th:replace="~{menu.html}"></div>
-
+    <div th:replace="~{menu.html}"></div>
 <div id="content">
     <div class="form-container">
         <h3 class="text-center">Cadastro de Residência</h3>
         <form th:action="@{/residence/create}" th:object="${residence}" method="post">
             <div class="mb-3">
                 <label for="name" class="form-label">Nome da Residência</label>
-                <input type="text" class="form-control" th:field="*{name}" maxlength="255" />
+                <input type="text" class="form-control" th:field="*{name}" maxlength="255" required />
             </div>
             <div class="mb-3">
-                <label for="street" class="form-label">Logradouro:</label>
+                <label for="street" class="form-label">Logradouro</label>
                 <input type="text" class="form-control" th:field="*{street}" required maxlength="255" />
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="neighborhood" class="form-label">Bairro:</label>
+                    <label for="neighborhood" class="form-label">Bairro</label>
                     <input type="text" class="form-control" th:field="*{neighborhood}" required maxlength="100" />
                 </div>
                 <div class="col-md-6">
-                    <label for="zipCode" class="form-label">CEP:</label>
+                    <label for="zipCode" class="form-label">CEP</label>
                     <input type="text" class="form-control" th:field="*{zipCode}" required maxlength="10" />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="city" class="form-label">Cidade:</label>
+                    <label for="city" class="form-label">Cidade</label>
                     <input type="text" class="form-control" th:field="*{city}" required maxlength="100" />
                 </div>
                 <div class="col-md-6">
-                    <label for="state" class="form-label">Estado:</label>
+                    <label for="state" class="form-label">Estado</label>
                     <input type="text" class="form-control" th:field="*{state}" required maxlength="2" />
                 </div>
             </div>
-            <div class="mb-3">
-                <label for="rentValue" class="form-label">Valor do Aluguel:</label>
-                <input type="number" class="form-control" th:field="*{rentValue}" step="0.01" required min="0.01" />
-            </div>
-            <div class="mb-3">
-                <label for="maxCapacity" class="form-label">Capacidade de Moradores:</label>
-                <input type="number" class="form-control" th:field="*{maxCapacity}" required min="1" />
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="rentValue" class="form-label">Valor do Aluguel</label>
+                    <div class="input-group">
+                        <span class="input-group-text">R$</span>
+                        <input type="text" class="form-control" th:field="*{rentValue}" inputmode="decimal" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="maxCapacity" class="form-label">Capacidade de Moradores</label>
+                    <input type="number" class="form-control" th:field="*{maxCapacity}" required min="1" />
+                </div>
             </div>
             <div class="text-center">
-                <button type="submit" class="btn btn-success">Salvar</button>
+                <button type="submit" class="btn btn-success btn-large">Salvar</button>
             </div>
         </form>
     </div>

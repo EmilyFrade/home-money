@@ -5,7 +5,6 @@ import com.homemoney.repositories.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,12 +23,12 @@ public class UserService {
     private UserRepository userRepository;
 
     public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
     }
 
-    public Optional<User> findCurrentUserByUsername(Authentication authentication) {
+    public User findCurrentUserByUsername(Authentication authentication) {
         String username = authentication.getName(); 
-        return userRepository.findByUsername(username); 
+        return userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
     }
 
     public void save(User user) {
@@ -61,7 +60,7 @@ public class UserService {
         }
     }
 
-    public List<User> findByResidence(Long residenceId) {
+    public List<User> findByResidenceId(Long residenceId) {
         return userRepository.findByResidenceId(residenceId);
     }
 }

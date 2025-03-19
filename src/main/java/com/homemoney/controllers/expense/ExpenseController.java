@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.math.BigDecimal;
 import org.springframework.web.bind.annotation.PostMapping;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/expense")
@@ -27,9 +28,23 @@ public class ExpenseController {
     private UserService userService;
 
     @GetMapping
-    public String listExpenses(Model model) {
-        List<Expense> expenses = expenseService.findAll();
-        model.addAttribute("expenses", expenses);
+    public String listExpenses(Model model, Authentication authentication) {
+        User currentUser = userService.findCurrentUserByUsername(authentication);
+        
+        List<Expense> allExpenses = expenseService.findAll();
+        
+        List<Expense> myExpenses = allExpenses.stream()
+            .filter(expense -> expense.getCreator().getId() == currentUser.getId())
+            .collect(Collectors.toList());
+        
+        List<Expense> sharedExpenses = allExpenses.stream()
+            .filter(expense -> expense.getCreator().getId() != currentUser.getId() &&
+                expense.getExpenseShares().stream()
+                .anyMatch(share -> share.getUser().getId() == currentUser.getId()))
+            .collect(Collectors.toList());
+
+        model.addAttribute("myExpenses", myExpenses);
+        model.addAttribute("sharedExpenses", sharedExpenses);
 
         return "expense/list";
     }

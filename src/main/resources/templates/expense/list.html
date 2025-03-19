@@ -8,8 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f4f7fa;
-            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
         }
 
         .card {
@@ -17,26 +17,25 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Estilo personalizado para o botão "Nova Despesa" */
         .btn-nova-despesa {
-            background-color: #204720; /* Verde escuro */
-            color: #fff; /* Texto branco */
+            background-color: #204720;
+            color: #fff;
             border: none;
-            padding: 12px 24px; /* Tamanho maior */
-            border-radius: 8px; /* Bordas arredondadas */
-            font-size: 16px; /* Fonte maior */
-            transition: background-color 0.3s ease; /* Transição suave */
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 8px; /* Espaço entre ícone e texto */
+            gap: 8px;
         }
 
         .btn-nova-despesa:hover {
-            background-color: #153115; /* Verde mais escuro no hover */
+            background-color: #153115;
         }
 
         .btn-nova-despesa i {
-            font-size: 18px; /* Ícone um pouco maior */
+            font-size: 18px;
         }
 
         .table-hover tbody tr:hover {
@@ -50,18 +49,17 @@
 
         @media (max-width: 768px) {
             .btn-nova-despesa {
-                padding: 10px 20px; /* Ajuste para telas menores */
+                padding: 10px 20px;
                 font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
-
+    <div th:replace="~{menu.html}"></div>
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3>Lista de Despesas</h3>
-        <!-- Botão "Nova Despesa" com o novo estilo -->
         <a href="/expense/create" class="btn btn-nova-despesa">
             <i class="bi bi-plus-circle"></i> Nova Despesa
         </a>
@@ -148,7 +146,6 @@
     </div>
 </div>
 
-<!-- Modal de Confirmação de Exclusão -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

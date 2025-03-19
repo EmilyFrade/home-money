@@ -7,14 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
-
+        
         body {
-            background: linear-gradient(to bottom, #e8f5e9 40%, #ffffff 100%);
-            background-size: cover;
-            position: relative;
-            min-height: 100vh;
+            background-color: #f8f9fa;
+            color: #333;
         }
-
         body::before {
             content: "";
             position: absolute;
@@ -27,7 +24,7 @@
             background-repeat: no-repeat;
             z-index: -1;
         }
-
+        
         .typing-effect {
             font-family: 'Poppins', sans-serif;
             font-size: 2rem;
@@ -38,7 +35,7 @@
             border-right: 3px solid #fafafa;
             display: inline-block;
         }
-
+        
         .fixed-card {
             height: 100%;
             display: flex;
@@ -48,79 +45,79 @@
     </style>
 </head>
 <body>
-
-<div class="container mt-4">
-    <div class="row g-4">
-        <div class="col-12 text-center">
-            <h1 class="typing-effect" id="typing-text"></h1>
-        </div>
-
-        <div class="col-md-6 col-lg-4" th:if="${noResidence}">
-            <div class="card p-4 text-center fixed-card">
-                <p class="fw-semibold">Você está sem lar :/</p>
-                <a href="/residence/create" class="btn btn-success w-100">Criar uma nova residência</a>
-                <p class="pt-3 fw-semibold">Ou</p>
-                <form th:action="@{/residence/join}" method="post">
-                    <input type="text" name="inviteCode" class="form-control mb-3 text-center" placeholder="Código de Convite" required />
-                    <button type="submit" class="btn btn-secondary w-100">Entrar com Código de Convite</button>
-                </form>
-                <div th:if="${invalidInviteCode}" class="mt-3 alert alert-danger">
-                    O código de convite informado é inválido. Por favor, tente novamente.
+    
+    <div class="container mt-4">
+        <div class="row g-4">
+            <div class="col-12 text-center">
+                <h1 class="typing-effect" id="typing-text"></h1>
+            </div>
+            
+            <div class="col-md-6 col-lg-4" th:if="${noResidence}">
+                <div class="card p-4 text-center fixed-card">
+                    <p class="fw-semibold">Você está sem lar :/</p>
+                    <a href="/residence/create" class="btn btn-success w-100">Criar uma nova residência</a>
+                    <p class="pt-3 fw-semibold">Ou</p>
+                    <form th:action="@{/residence/join}" method="post">
+                        <input type="text" name="inviteCode" class="form-control mb-3 text-center" placeholder="Código de Convite" required />
+                        <button type="submit" class="btn btn-secondary w-100">Entrar com Código de Convite</button>
+                    </form>
+                    <div th:if="${invalidInviteCode}" class="mt-3 alert alert-danger">
+                        O código de convite informado é inválido. Por favor, tente novamente.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4" th:if="${user}">
+                <div class="card p-4 text-center fixed-card">
+                    <h3 class="text-success fw-bold">Você</h3>
+                    <p><strong>Nome:</strong> <span th:text="${user.name}"></span></p>
+                    <p><strong>E-mail:</strong> <span th:text="${user.username}"></span></p>
+                    <a th:href="@{/user}" class="btn btn-success w-100 mt-3">Gerenciar Perfil</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4" th:if="${residence}">
+                <div class="card p-4 text-center fixed-card">
+                    <h3 class="text-success fw-bold">Sua Residência</h3>
+                    <p><strong>Nome:</strong> <span th:text="${residence.name}"></span></p>
+                    <p><strong>Endereço:</strong> <span th:text="${residence.street + ', ' + residence.neighborhood + ', ' + residence.city + ', ' + residence.state}"></span></p>
+                    <p><strong>Valor do Aluguel:</strong> R$ <span th:text="${#numbers.formatDecimal(residence.rentValue, 1, 'POINT', 2, 'COMMA')}"></span></p>
+                    <a th:href="@{/residence/details}" class="btn btn-success w-100 mt-3">Mais Informações</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="card p-4 text-center fixed-card">
+                    <h3 class="text-success fw-bold">Suas Despesas</h3>
+                    <p>Visualize suas despesas</p>
+                    <p>Crie novas despesas</p>
+                    <a th:href="@{/expense}" class="btn btn-success w-100 mt-3">Mais Informações</a>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-6 col-lg-4" th:if="${user}">
-            <div class="card p-4 text-center fixed-card">
-                <h3 class="text-success fw-bold">Você</h3>
-                <p><strong>Nome:</strong> <span th:text="${user.name}"></span></p>
-                <p><strong>E-mail:</strong> <span th:text="${user.username}"></span></p>
-                <a th:href="@{/user}" class="btn btn-success w-100 mt-3">Gerenciar Perfil</a>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4" th:if="${residence}">
-            <div class="card p-4 text-center fixed-card">
-                <h3 class="text-success fw-bold">Sua Residência</h3>
-                <p><strong>Nome:</strong> <span th:text="${residence.name}"></span></p>
-                <p><strong>Endereço:</strong> <span th:text="${residence.street + ', ' + residence.neighborhood + ', ' + residence.city + ', ' + residence.state}"></span></p>
-                <p><strong>Valor do Aluguel:</strong> R$ <span th:text="${#numbers.formatDecimal(residence.rentValue, 1, 'POINT', 2, 'COMMA')}"></span></p>
-                <a th:href="@{/residence/details}" class="btn btn-success w-100 mt-3">Mais Informações</a>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div class="card p-4 text-center fixed-card">
-                <h3 class="text-success fw-bold">Suas Despesas</h3>
-                <p>Visualize suas despesas</p>
-                <p>Crie novas despesas</p>
-                <a th:href="@{/expense}" class="btn btn-success w-100 mt-3">Mais Informações</a>
-            </div>
-        </div>
     </div>
-</div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const text = "Bem-vindo ao Home Money!";
-        let index = 0;
-        const typingElement = document.getElementById("typing-text");
-
-        function typeEffect() {
-            if (index < text.length) {
-                typingElement.innerHTML += text.charAt(index);
-                index++;
-                setTimeout(typeEffect, 100);
-            } else {
-                typingElement.style.borderRight = "none";
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const text = "Bem-vindo ao Home Money!";
+            let index = 0;
+            const typingElement = document.getElementById("typing-text");
+            
+            function typeEffect() {
+                if (index < text.length) {
+                    typingElement.innerHTML += text.charAt(index);
+                    index++;
+                    setTimeout(typeEffect, 100);
+                } else {
+                    typingElement.style.borderRight = "none";
+                }
             }
-        }
-
-        typeEffect();
-    });
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
+            
+            typeEffect();
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
 </body>
 </html>

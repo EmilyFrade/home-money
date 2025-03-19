@@ -32,9 +32,7 @@ public class ResidenceController {
 
     @PostMapping("/create")
     public String createResidence(@ModelAttribute Residence residence, Authentication authentication, RedirectAttributes redirectAttributes) {
-        User user = userService.findCurrentUserByUsername(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-
+        User user = userService.findCurrentUserByUsername(authentication);
 
         String inviteCode = UUID.randomUUID().toString().substring(0, 8);
         residence.setInviteCode(inviteCode);
@@ -52,13 +50,10 @@ public class ResidenceController {
 
     @PostMapping("/join")
     public String joinResidence(@RequestParam String inviteCode, Authentication authentication, Model model) {
-
         Residence residence = residenceService.findByInviteCode(inviteCode).orElse(null);
 
         if (residence != null) {
-            User user = userService.findCurrentUserByUsername(authentication)
-                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-
+            User user = userService.findCurrentUserByUsername(authentication);
             user.setResidence(residence);
             userService.save(user);
 
@@ -73,13 +68,11 @@ public class ResidenceController {
 
     @GetMapping("/details")
     public String showResidenceDetails(Model model, Authentication authentication) {
-        User user = userService.findCurrentUserByUsername(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-
+        User user = userService.findCurrentUserByUsername(authentication);
         Residence residence = user.getResidence();
 
         if (residence != null) {
-            List<User> residenceUsers = userService.findByResidence(residence.getId());
+            List<User> residenceUsers = userService.findByResidenceId(residence.getId());
             model.addAttribute("residence", residence);
             model.addAttribute("residenceUsers", residenceUsers);
         } else {

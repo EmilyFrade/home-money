@@ -16,7 +16,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String homePage(Authentication authentication, Model model) {
-        User user = userService.findCurrentUserByUsername(authentication).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        User user = userService.findCurrentUserByUsername(authentication);
 
         // Adicionar usuário ao modelo
         model.addAttribute("user", user);

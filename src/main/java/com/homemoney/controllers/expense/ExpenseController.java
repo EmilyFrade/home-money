@@ -35,10 +35,9 @@ public class ExpenseController {
 
     @GetMapping("/create")
     public String showCreateForm(Model model, Authentication authentication) {
-        User currentUser = userService.findCurrentUserByUsername(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        User currentUser = userService.findCurrentUserByUsername(authentication);
         
-        List<User> residenceUsers = userService.findByResidence(currentUser.getResidence().getId());
+        List<User> residenceUsers = userService.findByResidenceId(currentUser.getResidence().getId());
         
         model.addAttribute("expense", new Expense());
         model.addAttribute("categories", Expense.Category.values());

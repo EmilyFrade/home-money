@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -36,9 +35,9 @@ public class ExpenseService {
     }
 
     public void save(Expense expense, Authentication authentication) {
-        Optional<User> user = userService.findCurrentUserByUsername(authentication);
-        expense.setCreator(user.get());
-        expense.setResidence(user.get().getResidence());
+        User user = userService.findCurrentUserByUsername(authentication);
+        expense.setCreator(user);
+        expense.setResidence(user.getResidence());
 
         if (expense.getExpirationDate() != null) expense.setExpirationDate(DateUtils.parseToLocalDate(expense.getExpirationDate().toString()));
         if (expense.getPaymentDate() != null) expense.setPaymentDate(DateUtils.parseToLocalDate(expense.getPaymentDate().toString()));
@@ -82,8 +81,7 @@ public class ExpenseService {
     @Transactional
     public void saveWithShares(Long id, Expense expense, List<Long> participantIds, 
                              List<BigDecimal> shareValues, Authentication authentication) {
-        User creator = userService.findCurrentUserByUsername(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        User creator = userService.findCurrentUserByUsername(authentication);
 
         Expense expenseToSave;
         if (id != null && id > 0) {

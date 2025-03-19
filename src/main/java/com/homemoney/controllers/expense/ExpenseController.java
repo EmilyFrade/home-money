@@ -1,6 +1,7 @@
 package com.homemoney.controllers.expense;
 
 import com.homemoney.model.expense.Expense;
+import com.homemoney.model.expense.PaymentMethod;
 import com.homemoney.services.expense.ExpenseService;
 import com.homemoney.services.user.UserService;
 import com.homemoney.model.user.User;
@@ -41,8 +42,9 @@ public class ExpenseController {
         
         model.addAttribute("expense", new Expense());
         model.addAttribute("categories", Expense.Category.values());
-        model.addAttribute("paymentMethods", Expense.PaymentMethod.values());
+        model.addAttribute("paymentMethods", PaymentMethod.values());
         model.addAttribute("residenceUsers", residenceUsers);
+        model.addAttribute("currentUser", currentUser);
         
         return "expense/form";
     }
@@ -53,8 +55,10 @@ public class ExpenseController {
                             @RequestParam List<Long> participantIds,
                             @RequestParam List<BigDecimal> shareValues,
                             Authentication authentication) {
-        
-        expenseService.saveWithShares(id, expense, participantIds, shareValues, authentication);
+
+        expense.setId(id);
+        expenseService.save(expense, participantIds, shareValues, authentication);
+
         return "redirect:/expense";
     }
 
@@ -63,7 +67,7 @@ public class ExpenseController {
         Expense expense = expenseService.findById(id);
         model.addAttribute("expense", expense);
         model.addAttribute("categories", Expense.Category.values());
-        model.addAttribute("paymentMethods", Expense.PaymentMethod.values());
+        model.addAttribute("paymentMethods", PaymentMethod.values());
 
         return "expense/form";
     }

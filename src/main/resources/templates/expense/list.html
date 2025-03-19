@@ -72,9 +72,8 @@
                     <thead class="table-light">
                     <tr>
                         <th>Descrição</th>
-                        <th>Valor Total</th>
                         <th>Categoria</th>
-                        <th>Vencimento</th>
+                        <th>Valor Total</th>
                         <th>Status</th>
                         <th>Ações</th>
                     </tr>
@@ -85,16 +84,10 @@
                             <span th:text="${expense.description}"></span>
                         </td>
                         <td>
-                            R$ <span th:text="${#numbers.formatDecimal(expense.value, 1, 'POINT', 2, 'COMMA')}"></span>
-                        </td>
-                        <td>
                             <span class="badge bg-info" th:text="${expense.category}"></span>
                         </td>
                         <td>
-                            <span th:text="${T(com.homemoney.utils.DateUtils).formatToBrazilianDate(expense.expirationDate)}"></span>
-                            <i th:if="${expense.status.name() == 'Vencida'}"
-                               class="bi bi-exclamation-triangle-fill text-danger"
-                               title="Despesa Vencida"></i>
+                            R$ <span th:text="${#numbers.formatDecimal(expense.value, 1, 'POINT', 2, 'COMMA')}"></span>
                         </td>
                         <td>
                             <span th:class="${'badge ' +

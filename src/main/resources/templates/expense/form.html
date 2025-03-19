@@ -78,7 +78,6 @@
 
         .table th {
             background-color: #204720;
-            color: white;
         }
 
         .table td {
@@ -118,7 +117,7 @@
                     <h3 class="header-text">Cadastro de Despesa</h3>
                 </div>
                 <div class="card-body">
-                    <form th:action="@{'/expense/' + ${expense.id}}" th:object="${expense}" method="post">
+                    <form th:action="@{'/expense/' + ${expense.id}}" th:object="${expense}" method="post" onsubmit="return validateShares()">
 
                         <div class="mb-3">
                             <label for="value" class="form-label">Valor:</label>
@@ -183,6 +182,8 @@
                                             </td>
                                             <td>
                                                 <input type="checkbox" class="form-check-input participant-check"
+                                                       th:checked="${user.id == currentUser.id}"
+                                                       th:disabled="${user.id == currentUser.id}"
                                                        onchange="toggleParticipant(this)">
                                             </td>
                                         </tr>
@@ -244,6 +245,17 @@
             valueInput.value = '0.00';
         }
         updateTotalShare();
+    }
+
+    function validateShares() {
+        const totalShared = parseFloat(document.getElementById('totalShared').textContent);
+        const expenseValue = parseFloat(document.querySelector('[name="value"]').value) || 0;
+
+        if (totalShared != expenseValue) {
+            alert("O valor total das participações não pode ser diferente que o valor da despesa.");
+            return false;
+        }
+        return true;
     }
 </script>
 </body>

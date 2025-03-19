@@ -1,6 +1,7 @@
 package com.homemoney.services.expense;
 
 import com.homemoney.model.expense.Expense;
+import com.homemoney.model.expense.ExpenseShare;
 import com.homemoney.model.user.User;
 import com.homemoney.repositories.expense.ExpenseRepository;
 import com.homemoney.services.user.UserService;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -35,15 +35,25 @@ public class ExpenseService {
         return expenseRepository.findById(id).orElse(null);
     }
 
-    public void save(Expense expense, Authentication authentication) {
-        Optional<User> user = userService.findCurrentUserByUsername(authentication);
-        expense.setCreator(user.get());
-        expense.setResidence(user.get().getResidence());
+    public void save(Expense expense, List<Long> participantIds, List<BigDecimal> shareValues, Authentication authentication) {
+        User user = userService.findCurrentUserByUsername(authentication);
+        expense.setCreator(user);
+        expense.setResidence(user.getResidence());
 
         if (expense.getExpirationDate() != null) expense.setExpirationDate(DateUtils.parseToLocalDate(expense.getExpirationDate().toString()));
         if (expense.getPaymentDate() != null) expense.setPaymentDate(DateUtils.parseToLocalDate(expense.getPaymentDate().toString()));
 
         setExpenseStatus(expense);
+
+        expense.getExpenseShares().clear();
+
+        for (int i = 0; i < participantIds.size(); i++) {
+            if (shareValues.get(i).compareTo(BigDecimal.ZERO) > 0) {
+                User participant = userService.findById(participantIds.get(i));
+                addParticipant(expense, participant, shareValues.get(i), user);
+            }
+        }
+
         expenseRepository.save(expense);
     }
 
@@ -79,41 +89,19 @@ public class ExpenseService {
         expense.setStatus(Expense.Status.Pendente);
     }
 
-    @Transactional
-    public void saveWithShares(Long id, Expense expense, List<Long> participantIds, 
-                             List<BigDecimal> shareValues, Authentication authentication) {
-        User creator = userService.findCurrentUserByUsername(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+    private void addParticipant(Expense expense, User participant, BigDecimal valueShare, User currentUser) {
+        ExpenseShare share = new ExpenseShare();
+        share.setExpense(expense);
+        share.setUser(participant);
+        share.setValueShare(valueShare);
 
-        Expense expenseToSave;
-        if (id != null && id > 0) {
-            expenseToSave = findById(id);
-            // Atualiza os campos da despesa existente
-            expenseToSave.setDescription(expense.getDescription());
-            expenseToSave.setValue(expense.getValue());
-            expenseToSave.setCategory(expense.getCategory());
-            expenseToSave.setPaymentMethod(expense.getPaymentMethod());
-            expenseToSave.setExpirationDate(expense.getExpirationDate());
-            expenseToSave.setPaymentDate(expense.getPaymentDate());
+        if (participant.getId() == currentUser.getId() && expense.getStatus() == Expense.Status.Paga) {
+            share.setStatus(ExpenseShare.Status.Pago);
+            share.setPaymentMethod(expense.getPaymentMethod());
         } else {
-            expenseToSave = expense;
-            expenseToSave.setStatus(Expense.Status.Pendente);
-            expenseToSave.setCreator(creator);
-            expenseToSave.setResidence(creator.getResidence());
+            share.setStatus(ExpenseShare.Status.Pendente);
         }
 
-        // Limpa todas as shares existentes
-        expenseToSave.getExpenseShares().clear();
-
-        // Adiciona as novas shares
-        for (int i = 0; i < participantIds.size(); i++) {
-            if (shareValues.get(i).compareTo(BigDecimal.ZERO) > 0) {
-                User participant = userService.findById(participantIds.get(i));
-                
-                expenseToSave.addParticipant(participant, shareValues.get(i));
-            }
-        }
-
-        expenseRepository.save(expenseToSave);
+        expense.getExpenseShares().add(share);
     }
 }

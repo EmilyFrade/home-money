@@ -59,8 +59,7 @@
                                         <th>Participante</th>
                                         <th>Valor</th>
                                         <th>Status</th>
-                                        <th>Data Pagamento</th>
-                                        <th>Pago por</th>
+                                        <th>Forma de Pagamento</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -69,13 +68,12 @@
                                         <td>R$ <span th:text="${#numbers.formatDecimal(share.valueShare, 1, 'POINT', 2, 'COMMA')}"></span></td>
                                         <td>
                                             <span th:class="${'badge ' + 
-                                                (share.status.name() == 'PAGO' ? 'bg-success' : 
-                                                (share.status.name() == 'REEMBOLSADO' ? 'bg-info' : 'bg-warning'))}"
+                                                (share.status.name() == 'Pago' ? 'bg-success' : 
+                                                (share.status.name() == 'Reembolsado' ? 'bg-info' : 'bg-warning'))}"
                                                 th:text="${share.status}">
                                             </span>
                                         </td>
-                                        <td th:text="${share.paymentDate != null ? T(com.homemoney.utils.DateUtils).formatToBrazilianDate(share.paymentDate) : '-'}"></td>
-                                        <td th:text="${share.paidBy?.name ?: '-'}"></td>
+                                        <td th:text="${share.paymentMethod ?: '-'}"></td>
                                     </tr>
                                 </tbody>
                             </table>

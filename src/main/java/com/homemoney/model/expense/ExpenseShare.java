@@ -1,7 +1,6 @@
 package com.homemoney.model.expense;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import com.homemoney.model.user.User;
 
@@ -37,22 +36,16 @@ public class ExpenseShare {
     @DecimalMin("0.01")
     private BigDecimal valueShare;
 
-    @NotNull
-    @DecimalMin("0.00")
-    private BigDecimal valuePaid = BigDecimal.ZERO;
-
-    private LocalDate paymentDate;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Enumerated(EnumType.STRING)
-    private Status status = Status.PENDENTE;
-
-    @ManyToOne
-    private User paidBy;
+    private PaymentMethod paymentMethod; 
 
     public enum Status {
-        PENDENTE, 
-        PAGO,       
-        REEMBOLSADO 
+        Pendente, 
+        Pago,       
+        Reembolsado 
     }
 
     @Override

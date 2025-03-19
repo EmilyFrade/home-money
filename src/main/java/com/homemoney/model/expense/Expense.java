@@ -76,46 +76,9 @@ public class Expense {
         Outro; 
     }
 
-    public enum PaymentMethod {
-        Boleto,
-        Crédito, 
-        Débito,
-        Dinheiro,
-        Pix, 
-        Outro; 
-    }
-
     public enum Status {
         Pendente, 
         Paga, 
         Vencida;
-    }
-
-    public void addParticipant(User user, BigDecimal valueShare) {
-        ExpenseShare share = new ExpenseShare();
-        share.setExpense(this);
-        share.setUser(user);
-        share.setValueShare(valueShare);
-        share.setStatus(ExpenseShare.Status.PENDENTE);
-        share.setValuePaid(BigDecimal.ZERO);
-        this.expenseShares.add(share);
-    }
-
-    public void clearShares() {
-        this.expenseShares.clear();
-    }
-
-    public void registerPayment(User user, BigDecimal value, User paidBy) {
-        expenseShares.stream()
-            .filter(share -> share.getUser().equals(user))
-            .findFirst()
-            .ifPresent(share -> {
-                share.setValuePaid(value);
-                share.setPaidBy(paidBy);
-                share.setPaymentDate(LocalDate.now());
-                share.setStatus(paidBy.equals(user) ? 
-                    ExpenseShare.Status.PAGO : 
-                    ExpenseShare.Status.REEMBOLSADO);
-            });
     }
 }

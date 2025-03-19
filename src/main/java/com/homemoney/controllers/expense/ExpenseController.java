@@ -106,36 +106,23 @@ public class ExpenseController {
         User currentUser = userService.findCurrentUserByUsername(authentication);
 
         if (currentUser == null) {
-            return "redirect:/login"; // Redireciona para a página de login se o usuário não estiver autenticado
+            return "redirect:/login"; 
         }
 
-        // Calcula o total gasto no mês
         BigDecimal totalExpensesMonth = expenseService.calculateTotalExpensesThisMonth(currentUser);
-        System.out.println("Total gasto no mês: " + totalExpensesMonth); // Log para depuração
-
-        // Calcula o gasto médio mensal
         BigDecimal averageMonthlyExpense = expenseService.calculateAverageMonthlyExpense(currentUser);
-        System.out.println("Gasto médio mensal: " + averageMonthlyExpense); // Log para depuração
-
-        // Calcula o total de despesas compartilhadas
         BigDecimal totalSharedExpenses = expenseService.calculateTotalSharedExpenses(currentUser);
-        System.out.println("Despesas compartilhadas: " + totalSharedExpenses); // Log para depuração
 
-        // Obtém despesas por categoria
         Map<Expense.Category, BigDecimal> expensesByCategory = expenseService.getExpensesByCategory(currentUser);
-        System.out.println("Despesas por categoria: " + expensesByCategory); // Log para depuração
-
-        // Obtém despesas mensais (últimos 6 meses)
         Map<String, BigDecimal> monthlyExpenses = expenseService.getMonthlyExpenses(currentUser);
-        System.out.println("Despesas mensais: " + monthlyExpenses); // Log para depuração
 
-        // Adiciona os dados ao modelo
+
         model.addAttribute("totalExpensesMonth", totalExpensesMonth);
         model.addAttribute("averageMonthlyExpense", averageMonthlyExpense);
         model.addAttribute("totalSharedExpenses", totalSharedExpenses);
         model.addAttribute("expensesByCategory", expensesByCategory);
         model.addAttribute("monthlyExpenses", monthlyExpenses);
 
-        return "report"; // Nome da página de relatório (report.html)
+        return "report"; 
     }
 }

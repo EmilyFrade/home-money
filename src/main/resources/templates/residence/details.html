@@ -252,7 +252,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form th:action="@{/residence/delete/{id}(id=${residence.id})}" method="post">
+                    <form th:action="@{/residence/delete/{id}(id=${residence?.id})}" method="post">
                         <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
                     </form>
                 </div>

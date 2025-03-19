@@ -96,7 +96,7 @@ public class Expense {
         share.setExpense(this);
         share.setUser(user);
         share.setValueShare(valueShare);
-        share.setStatus(ExpenseShare.Status.PENDENTE);
+        share.setStatus(ExpenseShare.Status.Pendente);
         share.setValuePaid(BigDecimal.ZERO);
         this.expenseShares.add(share);
     }
@@ -114,8 +114,8 @@ public class Expense {
                 share.setPaidBy(paidBy);
                 share.setPaymentDate(LocalDate.now());
                 share.setStatus(paidBy.equals(user) ? 
-                    ExpenseShare.Status.PAGO : 
-                    ExpenseShare.Status.REEMBOLSADO);
+                    ExpenseShare.Status.Pago : 
+                    ExpenseShare.Status.Reembolsado);
             });
     }
 }

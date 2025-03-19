@@ -44,15 +44,15 @@ public class ExpenseShare {
     private LocalDate paymentDate;
 
     @Enumerated(EnumType.STRING)
-    private Status status = Status.PENDENTE;
+    private Status status;
 
     @ManyToOne
     private User paidBy;
 
     public enum Status {
-        PENDENTE, 
-        PAGO,       
-        REEMBOLSADO 
+        Pendente, 
+        Pago,       
+        Reembolsado 
     }
 
     @Override

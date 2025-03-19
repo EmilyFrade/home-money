@@ -76,7 +76,6 @@
                         <th>Categoria</th>
                         <th>Vencimento</th>
                         <th>Status</th>
-                        <th>Participantes</th>
                         <th>Ações</th>
                     </tr>
                     </thead>
@@ -84,10 +83,13 @@
                     <tr th:each="expense : ${expenses}">
                         <td>
                             <span th:text="${expense.description}"></span>
-                            <span th:if="${expense.paymentMethod}" class="badge bg-secondary ms-2" th:text="${expense.paymentMethod}"></span>
                         </td>
-                        <td>R$ <span th:text="${#numbers.formatDecimal(expense.value, 1, 'POINT', 2, 'COMMA')}"></span></td>
-                        <td><span class="badge bg-info" th:text="${expense.category}"></span></td>
+                        <td>
+                            R$ <span th:text="${#numbers.formatDecimal(expense.value, 1, 'POINT', 2, 'COMMA')}"></span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info" th:text="${expense.category}"></span>
+                        </td>
                         <td>
                             <span th:text="${T(com.homemoney.utils.DateUtils).formatToBrazilianDate(expense.expirationDate)}"></span>
                             <i th:if="${expense.status.name() == 'Vencida'}"
@@ -95,32 +97,11 @@
                                title="Despesa Vencida"></i>
                         </td>
                         <td>
-                                    <span th:class="${'badge ' +
-                                        (expense.status.name() == 'Paga' ? 'bg-success' :
-                                        (expense.status.name() == 'Vencida' ? 'bg-danger' : 'bg-warning'))}"
-                                          th:text="${expense.status}">
-                                    </span>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <span th:text="${#sets.size(expense.expenseShares) + ' pessoas'}"></span>
-                                <div class="dropdown ms-2">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        Ver
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li th:each="share : ${expense.expenseShares}">
-                                            <a class="dropdown-item">
-                                                <span th:text="${share.user.name}"></span>
-                                                <span class="text-muted">- R$ </span>
-                                                <span th:text="${#numbers.formatDecimal(share.valueShare, 1, 'POINT', 2, 'COMMA')}"></span>
-                                                <span th:if="${share.status.name() == 'PAGO'}"
-                                                      class="badge bg-success ms-1">Pago</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                            <span th:class="${'badge ' +
+                                (expense.status.name() == 'Paga' ? 'bg-success' :
+                                (expense.status.name() == 'Vencida' ? 'bg-danger' : 'bg-warning'))}"
+                                    th:text="${expense.status}">
+                            </span>
                         </td>
                         <td>
                             <div class="btn-group">

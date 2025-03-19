@@ -15,6 +15,7 @@
         .card {
             border: none;
             border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .card-header {
@@ -22,6 +23,7 @@
             color: white;
             font-weight: bold;
             border-radius: 10px 10px 0 0;
+            border-bottom: none; /* Removendo a borda inferior */
         }
 
         .card-body {
@@ -29,13 +31,14 @@
         }
 
         .btn-primary {
-            background-color: #ffffff;
-            border-color: #ffffff;
+            background-color: #204720;
+            border-color: #204720;
+            color: white;
         }
 
         .btn-primary:hover {
-            background-color: #218838;
-            border-color: #1e7e34;
+            background-color: #153115;
+            border-color: #153115;
         }
 
         .btn-danger {
@@ -49,22 +52,13 @@
         }
 
         .table th {
-            background-color: #ffffff;
+            background-color: #204720;
             color: white;
         }
 
         .table td {
             background-color: #f8f9fa;
             color: #333;
-        }
-
-        .profile-section {
-            padding-top: 20px;
-        }
-
-        .bg-green {
-            background-color: #ffffff;
-            color: white;
         }
 
         .header-text {
@@ -94,11 +88,14 @@
         }
 
         .back-button {
-            font-size: 14px;
+            font-size: 16px;
             color: #204720;
             background: transparent;
             border: none;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .back-button:hover {
@@ -107,145 +104,159 @@
         }
 
         .residence-info, .residence-users {
-            display: inline-block;
-            vertical-align: top;
-            width: 48%;
-            margin-right: 2%;
-        }
-
-        .residence-users {
-            width: 48%;
-            margin-left: 2%;
+            margin-bottom: 20px;
         }
 
         .btn-edit-container {
             text-align: center;
             margin-top: 20px;
         }
+
+        @media (max-width: 768px) {
+            .residence-info, .residence-users {
+                width: 100%;
+                margin-right: 0;
+                margin-left: 0;
+            }
+
+            .back-button {
+                font-size: 14px;
+            }
+
+            .header-text {
+                font-size: 18px;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-group .btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container mt-4">
+<div class="container mt-4">
 
-        <div th:if="${residence != null}" class="card shadow-sm mt-4">
-            
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <button class="back-button" href="/home">
-                    <i class="bi bi-arrow-left-circle" style="font-size: 1.5rem;"></i> <span style="font-size: 1.5rem;">Voltar ao início</span>
+    <div th:if="${residence != null}" class="card shadow-sm mt-4">
+
+        <!-- Cabeçalho com Botões -->
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <button class="back-button" onclick="window.location.href='/home'">
+                <i class="bi bi-arrow-left-circle"></i> <span>Voltar ao início</span>
+            </button>
+            <div class="d-flex gap-2">
+                <a th:href="@{/residence/edit/{id}(id=${residence.id})}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <i class="bi bi-trash"></i> Excluir
                 </button>
             </div>
+        </div>
 
-            <div class="card-body">
-                <div class="content-section row">
-                    <!-- Informações da Residência -->
-                    <div class="col-md-6">
-                        <div class="residence-info">
-                            <h4 class="header-text">Informações da Residência</h4>
-                            <p><strong>Endereço:</strong> <span th:text="${residence.street}"></span>, <span th:text="${residence.neighborhood}"></span></p>
-                            <p><strong>CEP:</strong> <span th:text="${residence.zipCode}"></span></p>
-                            <p><strong>Cidade/Estado:</strong> <span th:text="${residence.city + '/' + residence.state}"></span></p>
-                            <p><strong>Valor do Aluguel:</strong> <span th:text="${#numbers.formatCurrency(residence.rentValue)}"></span></p>
-                            <p><strong>Capacidade Máxima:</strong> <span th:text="${residence.maxCapacity}"></span></p>
-                            <p><strong>Moradores Atuais:</strong> <span th:text="${#lists.size(residenceUsers)}"></span></p>
-            
-                            <hr>
-            
-                            <h4 class="header-text">Código de Convite</h4>
-                            <input type="text" th:value="${residence.inviteCode}" class="form-control bg-light text-dark" readonly id="inviteCode">
-                            <button class="btn btn-success mt-2" onclick="copiarCodigo()">Copiar Código</button>
-                        </div>
-                    </div>
-            
-                    <!-- Tabela de Moradores -->
-                    <div class="col-md-6">
-                        <div class="residence-users">
-                            <h4 class="header-text">Moradores</h4>
-                            <div th:if="${#lists.isEmpty(residenceUsers)}" class="alert alert-info">
-                                Nenhum morador registrado nesta residência.
-                            </div>
-                            <div th:unless="${#lists.isEmpty(residenceUsers)}" class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Nome</th>
-                                            <th>Email</th>
-                                            <th>Data de Entrada</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="user : ${residenceUsers}">
-                                            <td th:text="${user.name}"></td>
-                                            <td th:text="${user.username}"></td>
-                                            <td th:text="${#temporals.format(user.registrationDate, 'dd/MM/yyyy')}"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+        <div class="card-body">
+            <div class="content-section row">
+                <!-- Informações da Residência -->
+                <div class="col-md-6 residence-info">
+                    <h4 class="header-text">Informações da Residência</h4>
+                    <p><strong>Endereço:</strong> <span th:text="${residence.street}"></span>, <span th:text="${residence.neighborhood}"></span></p>
+                    <p><strong>CEP:</strong> <span th:text="${residence.zipCode}"></span></p>
+                    <p><strong>Cidade/Estado:</strong> <span th:text="${residence.city + '/' + residence.state}"></span></p>
+                    <p><strong>Valor do Aluguel:</strong> <span th:text="${#numbers.formatCurrency(residence.rentValue)}"></span></p>
+                    <p><strong>Capacidade Máxima:</strong> <span th:text="${residence.maxCapacity}"></span></p>
+                    <p><strong>Moradores Atuais:</strong> <span th:text="${#lists.size(residenceUsers)}"></span></p>
+
+                    <!-- Código de Convite -->
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                        <input type="text" th:value="${residence.inviteCode}" class="form-control bg-light text-dark" readonly id="inviteCode" style="flex: 1; min-width: 150px;">
+                        <button class="btn btn-success" onclick="copiarCodigo()">Copiar Código</button>
                     </div>
                 </div>
-            
-                <!-- Botões Editar e Excluir ao lado do código de convite -->
-                <div class="d-flex justify-content-between mt-4">
-                    <div>
-                        <a th:href="@{/residence/edit/{id}(id=${residence.id})}" class="btn btn-light me-2">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                            <i class="bi bi-trash"></i> Excluir
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            
 
-        <div th:if="${noResidence}" class="card shadow-sm mt-4">
-            <div class="card-body text-center">
-                Está sem um lar? :( <br>Entre ou crie uma residência para administrar suas despesas
-                <div class="pt-3">
-                    <a href="/residence/create" class="btn btn-primary">Criar uma nova residência</a>
-                    <p class="pt-3">Ou</p>
-                    <form th:action="@{/residence/join}" method="post">
-                        <input type="text" name="inviteCode" class="form-control mb-3 bg-light text-dark" placeholder="Código de Convite" required style="width: 10cm; margin: auto;">
-                        <button type="submit" class="btn btn-secondary" style="width: 10cm; margin: auto;">Entrar com Código de Convite</button>
-                    </form>
-                    <div th:if="${invalidInviteCode}" class="mt-4 alert alert-danger" style="width: 10cm; margin: auto;">
-                        O código de convite informado é inválido. Por favor, tente novamente.
+                <!-- Tabela de Moradores -->
+                <div class="col-md-6 residence-users">
+                    <h4 class="header-text">Moradores</h4>
+                    <div th:if="${#lists.isEmpty(residenceUsers)}" class="alert alert-info">
+                        Nenhum morador registrado nesta residência.
+                    </div>
+                    <div th:unless="${#lists.isEmpty(residenceUsers)}" class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Data de Entrada</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="user : ${residenceUsers}">
+                                <td th:text="${user.name}"></td>
+                                <td th:text="${user.username}"></td>
+                                <td th:text="${#temporals.format(user.registrationDate, 'dd/MM/yyyy')}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Tem certeza que deseja excluir esta residência? Esta ação não pode ser desfeita.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form th:action="@{/residence/delete/{id}(id=${residence.id})}" method="post">
-                        <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
-                    </form>
+    <div th:if="${noResidence}" class="card shadow-sm mt-4">
+        <div class="card-body text-center">
+            Está sem um lar? :( <br>Entre ou crie uma residência para administrar suas despesas
+            <div class="pt-3">
+                <a href="/residence/create" class="btn btn-primary">Criar uma nova residência</a>
+                <p class="pt-3">Ou</p>
+                <form th:action="@{/residence/join}" method="post">
+                    <input type="text" name="inviteCode" class="form-control mb-3 bg-light text-dark" placeholder="Código de Convite" required style="width: 100%; max-width: 300px; margin: auto;">
+                    <button type="submit" class="btn btn-secondary" style="width: 100%; max-width: 300px; margin: auto;">Entrar com Código de Convite</button>
+                </form>
+                <div th:if="${invalidInviteCode}" class="mt-4 alert alert-danger" style="width: 100%; max-width: 300px; margin: auto;">
+                    O código de convite informado é inválido. Por favor, tente novamente.
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        function copiarCodigo() {
-            var codigo = document.getElementById("inviteCode").value;
-            navigator.clipboard.writeText(codigo).then(() => {
-                alert("Código copiado: " + codigo);
-            }).catch(err => console.error("Erro ao copiar código", err));
-        }
-    </script>
+<!-- Modal de Exclusão -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir esta residência? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form th:action="@{/residence/delete/{id}(id=${residence.id})}" method="post">
+                    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copiarCodigo() {
+        var codigo = document.getElementById("inviteCode").value;
+        navigator.clipboard.writeText(codigo).then(() => {
+            alert("Código copiado: " + codigo);
+        }).catch(err => console.error("Erro ao copiar código", err));
+    }
+</script>
 </body>
 </html>

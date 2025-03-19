@@ -16,7 +16,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Exibe tela de perfil do usuário
     @GetMapping
     public String showProfile(Authentication authentication, Model model) {
         Optional<User> userOpt = userService.findCurrentUserByUsername(authentication);
@@ -26,7 +25,6 @@ public class UserController {
             model.addAttribute("user", user);
 
             if (user.getResidence() != null) {
-                // Usuário já está associado a uma residência
                 model.addAttribute("residence", user.getResidence());
             }
             
@@ -36,14 +34,12 @@ public class UserController {
         return "redirect:/login";
     }
 
-    // Exibe o formulário de cadastro de usuário
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("user", new User());
         return "user/createForm";
     }
 
-    // Salva o usuário
     @PostMapping("/create/{id}")
     public String createUser(@PathVariable Long id, @ModelAttribute User user, HttpServletRequest request) {
         user.setId(id);
@@ -51,10 +47,10 @@ public class UserController {
         return "redirect:/";
     }
 
-    // Exibe o formulário de edição de usuário
     @GetMapping("/edit/{id}")
-    public String showEditForm(Authentication authentication, Model model) {
-        Optional<User> userOpt = userService.findCurrentUserByUsername(authentication);
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Optional<User> userOpt = Optional.ofNullable(userService.findById(id));
+
         if (userOpt.isPresent()) {
             model.addAttribute("user", userOpt.get());
             return "user/editForm";
@@ -62,10 +58,14 @@ public class UserController {
         return "redirect:/user";
     }
 
-    // Edita o usuário
     @PostMapping("/edit/{id}")
     public String editUser(@PathVariable Long id, @ModelAttribute User user, HttpServletRequest request) {
         userService.update(id, user);
         return "redirect:/user";
+    }
+
+    @GetMapping("/change-password")
+    public String showChangePasswordForm() {
+        return "/user/resetPassword";
     }
 }

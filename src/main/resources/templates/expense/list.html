@@ -4,23 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Despesas</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo personalizado para o botão "Nova Despesa" */
+        .btn-nova-despesa {
+            background-color: #204720; /* Verde escuro */
+            color: #fff; /* Texto branco */
+            border: none;
+            padding: 12px 24px; /* Tamanho maior */
+            border-radius: 8px; /* Bordas arredondadas */
+            font-size: 16px; /* Fonte maior */
+            transition: background-color 0.3s ease; /* Transição suave */
+            display: inline-flex;
+            align-items: center;
+            gap: 8px; /* Espaço entre ícone e texto */
+        }
+
+        .btn-nova-despesa:hover {
+            background-color: #153115; /* Verde mais escuro no hover */
+        }
+
+        .btn-nova-despesa i {
+            font-size: 18px; /* Ícone um pouco maior */
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(32, 71, 32, 0.05);
+        }
+
+        .badge {
+            font-size: 0.9em;
+            padding: 0.5em 0.75em;
+        }
+
+        @media (max-width: 768px) {
+            .btn-nova-despesa {
+                padding: 10px 20px; /* Ajuste para telas menores */
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div th:replace="~{menu.html}"></div>
 
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3>Lista de despesas</h3>
-            <a href="/expense/create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Nova Despesa
-            </a>
-        </div>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Lista de Despesas</h3>
+        <!-- Botão "Nova Despesa" com o novo estilo -->
+        <a href="/expense/create" class="btn btn-nova-despesa">
+            <i class="bi bi-plus-circle"></i> Nova Despesa
+        </a>
+    </div>
 
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-light">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
                     <tr>
                         <th>Descrição</th>
                         <th>Valor Total</th>
@@ -30,8 +81,8 @@
                         <th>Participantes</th>
                         <th>Ações</th>
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     <tr th:each="expense : ${expenses}">
                         <td>
                             <span th:text="${expense.description}"></span>
@@ -41,16 +92,16 @@
                         <td><span class="badge bg-info" th:text="${expense.category}"></span></td>
                         <td>
                             <span th:text="${T(com.homemoney.utils.DateUtils).formatToBrazilianDate(expense.expirationDate)}"></span>
-                            <i th:if="${expense.status.name() == 'Vencida'}" 
-                               class="bi bi-exclamation-triangle-fill text-danger" 
+                            <i th:if="${expense.status.name() == 'Vencida'}"
+                               class="bi bi-exclamation-triangle-fill text-danger"
                                title="Despesa Vencida"></i>
                         </td>
                         <td>
-                            <span th:class="${'badge ' + 
-                                (expense.status.name() == 'Paga' ? 'bg-success' : 
-                                (expense.status.name() == 'Vencida' ? 'bg-danger' : 'bg-warning'))}"
-                                th:text="${expense.status}">
-                            </span>
+                                    <span th:class="${'badge ' +
+                                        (expense.status.name() == 'Paga' ? 'bg-success' :
+                                        (expense.status.name() == 'Vencida' ? 'bg-danger' : 'bg-warning'))}"
+                                          th:text="${expense.status}">
+                                    </span>
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
@@ -65,7 +116,7 @@
                                                 <span th:text="${share.user.name}"></span>
                                                 <span class="text-muted">- R$ </span>
                                                 <span th:text="${#numbers.formatDecimal(share.valueShare, 1, 'POINT', 2, 'COMMA')}"></span>
-                                                <span th:if="${share.status.name() == 'PAGO'}" 
+                                                <span th:if="${share.status.name() == 'PAGO'}"
                                                       class="badge bg-success ms-1">Pago</span>
                                             </a>
                                         </li>
@@ -75,55 +126,57 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <a th:href="@{/expense/show/{id}(id=${expense.id})}" 
+                                <a th:href="@{/expense/show/{id}(id=${expense.id})}"
                                    class="btn btn-sm btn-info" title="Detalhes">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <a th:href="@{/expense/edit/{id}(id=${expense.id})}" 
+                                <a th:href="@{/expense/edit/{id}(id=${expense.id})}"
                                    class="btn btn-sm btn-warning" title="Editar">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-danger" 
+                                <button type="button" class="btn btn-sm btn-danger"
                                         th:onclick="'confirmDelete(' + ${expense.id} + ')'" title="Excluir">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Modal de Confirmação de Exclusão -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirmar Exclusão</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Tem certeza que deseja excluir esta despesa?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form id="deleteForm" method="get" style="display: inline;">
-                        <button type="submit" class="btn btn-danger">Excluir</button>
-                    </form>
-                </div>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function confirmDelete(id) {
-            const modal = document.getElementById('deleteModal');
-            const form = document.getElementById('deleteForm');
-            form.action = `/expense/delete/${id}`;
-            new bootstrap.Modal(modal).show();
-        }
-    </script>
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir esta despesa?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="get" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function confirmDelete(id) {
+        const modal = document.getElementById('deleteModal');
+        const form = document.getElementById('deleteForm');
+        form.action = `/expense/delete/${id}`;
+        new bootstrap.Modal(modal).show();
+    }
+</script>
 </body>
 </html>

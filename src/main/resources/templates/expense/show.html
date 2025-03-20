@@ -6,20 +6,39 @@
     <title>Detalhes da Despesa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .disabled-link {
+            pointer-events: none;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
     <div th:replace="~{menu.html}"></div>
 
     <div class="container mt-4">
         <div class="card shadow">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h3 class="mb-0" th:text="${expense.description}">Despesa</h3>
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0" th:text="${expense.description}">Despesa</h4>
                 <div>
-                    <a th:href="@{/expense/edit/{id}(id=${expense.id})}" class="btn btn-light me-2">
+                    <a th:href="@{/expense/edit/{id}(id=${expense.id})}" 
+                       class="btn btn-light" 
+                       th:classappend="${!(expense.creator.id == currentUser.id) ? 'disabled-link' : ''}">
                         <i class="bi bi-pencil"></i> Editar
                     </a>
-                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()"
+                            th:disabled="${!(expense.creator.id == currentUser.id)}">
                         <i class="bi bi-trash"></i> Excluir
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="confirmPay()"
+                            th:disabled="${!(expense.creator.id == currentUser.id && expense.status.name() != 'Paga')}">
+                        <i class="bi bi-cash"></i> Pagar
+                    </button>
+                    <button th:each="share : ${expense.expenseShares}"
+                            th:if="${share.user.id == currentUser.id}"
+                            th:disabled="${!(expense.creator.id != currentUser.id && share.status.name() != 'Reembolsado')}"
+                            type="button" class="btn btn-secondary" onclick="confirmReimburse()">
+                        <i class="bi bi-arrow-repeat"></i> Reembolsar
                     </button>
                 </div>
             </div>
@@ -29,7 +48,7 @@
                     <div class="col-md-6">
                         <h5 class="mb-3">Informações Gerais</h5>
                         <p><strong>Valor Total:</strong> R$ <span th:text="${#numbers.formatDecimal(expense.value, 1, 'POINT', 2, 'COMMA')}"></span></p>
-                        <p><strong>Categoria:</strong> <span class="badge bg-info" th:text="${expense.category}"></span></p>
+                        <p><strong>Categoria:</strong> <span th:text="${expense.category}"></span></p>
                         <p><strong>Status:</strong> 
                             <span th:class="${'badge ' + 
                                 (expense.status.name() == 'Paga' ? 'bg-success' : 
@@ -69,7 +88,7 @@
                                         <td>
                                             <span th:class="${'badge ' + 
                                                 (share.status.name() == 'Pago' ? 'bg-success' : 
-                                                (share.status.name() == 'Reembolsado' ? 'bg-info' : 'bg-warning'))}"
+                                                (share.status.name() == 'Reembolsado' ? 'bg-secondary' : 'bg-warning'))}"
                                                 th:text="${share.status}">
                                             </span>
                                         </td>
@@ -105,10 +124,71 @@
         </div>
     </div>
 
+    <div class="modal fade" id="payModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Pagamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="payForm" method="post" th:action="@{/expense/pay/{id}(id=${expense.id})}">
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label">Forma de Pagamento:</label>
+                            <select class="form-select" name="paymentMethod" required>
+                                <option value="Boleto">Boleto</option>
+                                <option value="Crédito">Crédito</option>
+                                <option value="Débito">Débito</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Pix">Pix</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Confirmar Pagamento</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="reimburseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Reembolso</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reimburseForm" method="post" th:action="@{/expense/reimburse/{id}(id=${expense.id})}">
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label">Forma de Pagamento:</label>
+                            <select class="form-select" name="paymentMethod" required>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Pix">Pix</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-info">Confirmar Reembolso</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function confirmDelete() {
             new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        function confirmPay() {
+            const modal = document.getElementById('payModal');
+            new bootstrap.Modal(modal).show();
+        }
+
+        function confirmReimburse() {
+            const modal = document.getElementById('reimburseModal');
+            new bootstrap.Modal(modal).show();
         }
     </script>
 </body>

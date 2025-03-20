@@ -53,13 +53,17 @@
                 font-size: 14px;
             }
         }
+
+        .modal {
+            z-index: 1050;
+        }
     </style>
 </head>
 <body>
     <div th:replace="~{menu.html}"></div>
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3>Minhas Despesas</h3>
+    <div class="d-flex justify-content-between align-items-center">
+        <h4>Minhas Despesas</h4>
         <a href="/expense/create" class="btn btn-nova-despesa">
             <i class="bi bi-plus-circle"></i> Nova Despesa
         </a>
@@ -71,11 +75,11 @@
                 <table class="table table-hover">
                     <thead class="table-light">
                     <tr>
-                        <th>Descrição</th>
-                        <th>Categoria</th>
-                        <th>Valor Total</th>
-                        <th>Status</th>
-                        <th>Ações</th>
+                        <th class="col-3">Descrição</th>
+                        <th class="col-2">Categoria</th>
+                        <th class="col-2">Valor Total</th>
+                        <th class="col-2">Status</th>
+                        <th class="col-2">Ações</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -84,16 +88,16 @@
                             <span th:text="${expense.description}"></span>
                         </td>
                         <td>
-                            <span class="badge bg-info" th:text="${expense.category}"></span>
+                            <span th:text="${expense.category}"></span>
                         </td>
                         <td>
                             R$ <span th:text="${#numbers.formatDecimal(expense.value, 1, 'POINT', 2, 'COMMA')}"></span>
                         </td>
                         <td>
-                            <span th:class="${'badge ' +
+                            <span th:class="${'badge ' + 
                                 (expense.status.name() == 'Paga' ? 'bg-success' :
                                 (expense.status.name() == 'Vencida' ? 'bg-danger' : 'bg-warning'))}"
-                                    th:text="${expense.status}">
+                                th:text="${expense.status}">
                             </span>
                         </td>
                         <td>
@@ -110,6 +114,11 @@
                                         th:onclick="'confirmDelete(' + ${expense.id} + ')'" title="Excluir">
                                     <i class="bi bi-trash"></i>
                                 </button>
+                                <button type="button" class="btn btn-sm btn-success"
+                                        th:onclick="'confirmPay(' + ${expense.id} + ')'" title="Pagar"
+                                        th:disabled="${expense.status.name() == 'Paga'}">
+                                    <i class="bi bi-cash"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -119,18 +128,19 @@
         </div>
     </div>
 
-    <h3>Despesas Compartilhadas Comigo</h3>
+    <h4>Despesas Compartilhadas Comigo</h4>
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="table-light">
                     <tr>
-                        <th>Descrição</th>
-                        <th>Categoria</th>
-                        <th>Valor Total</th>
-                        <th>Status</th>
-                        <th>Ações</th>
+                        <th class="col-3">Descrição</th>
+                        <th class="col-2">Categoria</th>
+                        <th class="col-2">Valor Total</th>
+                        <th class="col-2">Status da despesa</th>
+                        <th class="col-2">Status da sua parte</th>
+                        <th class="col-2">Ações</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -139,16 +149,25 @@
                             <span th:text="${expense.description}"></span>
                         </td>
                         <td>
-                            <span class="badge bg-info" th:text="${expense.category}"></span>
+                            <span th:text="${expense.category}"></span>
                         </td>
                         <td>
                             R$ <span th:text="${#numbers.formatDecimal(expense.value, 1, 'POINT', 2, 'COMMA')}"></span>
                         </td>
                         <td>
-                            <span th:class="${'badge ' +
+                            <span th:class="${'badge ' + 
                                 (expense.status.name() == 'Paga' ? 'bg-success' :
                                 (expense.status.name() == 'Vencida' ? 'bg-danger' : 'bg-warning'))}"
-                                    th:text="${expense.status}">
+                                th:text="${expense.status}">
+                            </span>
+                        </td>
+                        <td>
+                            <span th:each="share : ${expense.expenseShares}"
+                                  th:if="${share.user.id == currentUser.id}"
+                                  th:class="${'badge ' +
+                                      (share.status.name() == 'Pago' ? 'bg-success' :
+                                      (share.status.name() == 'Reembolsado' ? 'bg-secondary' : 'bg-warning'))}"
+                                  th:text="${share.status}">
                             </span>
                         </td>
                         <td>
@@ -157,6 +176,13 @@
                                    class="btn btn-sm btn-info" title="Detalhes">
                                     <i class="bi bi-eye"></i>
                                 </a>
+                                <button th:each="share : ${expense.expenseShares}"
+                                        th:if="${share.user.id == currentUser.id}"
+                                        th:disabled="${!(share.status.name() != 'Reembolsado')}"
+                                        type="button" class="btn btn-sm btn-success"
+                                        th:onclick="'confirmReimburse(' + ${expense.id} + ')'" title="Reembolsar">
+                                    <i class="bi bi-arrow-repeat"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -187,12 +213,77 @@
     </div>
 </div>
 
+<div class="modal fade" id="payModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Pagamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="payForm" method="post">
+                    <div class="mb-3">
+                        <label for="paymentMethod" class="form-label">Forma de Pagamento:</label>
+                        <select class="form-select" name="paymentMethod" required>
+                            <option value="Boleto">Boleto</option>
+                            <option value="Crédito">Crédito</option>
+                            <option value="Débito">Débito</option>
+                            <option value="Dinheiro">Dinheiro</option>
+                            <option value="Pix">Pix</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Confirmar Pagamento</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="reimburseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Reembolso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reimburseForm" method="post">
+                    <div class="mb-3">
+                        <label for="paymentMethod" class="form-label">Forma de Pagamento:</label>
+                        <select class="form-select" name="paymentMethod" required>
+                            <option value="Dinheiro">Dinheiro</option>
+                            <option value="Pix">Pix</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-info">Confirmar Reembolso</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function confirmDelete(id) {
         const modal = document.getElementById('deleteModal');
         const form = document.getElementById('deleteForm');
         form.action = `/expense/delete/${id}`;
+        new bootstrap.Modal(modal).show();
+    }
+
+    function confirmPay(id) {
+        const modal = document.getElementById('payModal');
+        const form = document.getElementById('payForm');
+        form.action = `/expense/pay/${id}`;
+        new bootstrap.Modal(modal).show();
+    }
+
+    function confirmReimburse(id) {
+        const modal = document.getElementById('reimburseModal');
+        const form = document.getElementById('reimburseForm');
+        form.action = `/expense/reimburse/${id}`;
         new bootstrap.Modal(modal).show();
     }
 </script>

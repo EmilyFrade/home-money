@@ -4,6 +4,7 @@ import com.homemoney.model.expense.Expense;
 import com.homemoney.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -22,8 +23,14 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT e.category, SUM(e.value) FROM Expense e WHERE e.status = 'Paga' GROUP BY e.category")
     List<Object[]> findExpensesByCategory();
 
-    @Query(value = "SELECT DATE_FORMAT(e.payment_date, '%Y-%m') AS mes, SUM(e.value) FROM expense e WHERE e.payment_date >= DATE_SUB(CURRENT_DATE, INTERVAL 6 MONTH) AND e.status = 'Paga' GROUP BY mes ORDER BY mes", nativeQuery = true)
-    List<Object[]> findMonthlyExpensesLast6Months();
+    @Query(value = "SELECT e.category, SUM(e.value) AS total " +
+    "FROM expense e " +
+    "WHERE e.creator_id = :userId " +
+    "AND MONTH(e.payment_date) = MONTH(CURRENT_DATE) " +
+    "AND YEAR(e.payment_date) = YEAR(CURRENT_DATE) " +
+    "GROUP BY e.category", nativeQuery = true)
+
+    List<Object[]> findCurrentMonthExpensesByCategory(@Param("userId") Long userId);
 
     List<Expense> findByStatus(Expense.Status status);
 

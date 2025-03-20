@@ -40,14 +40,6 @@
                 </div>
             </div>
 
-            <div class="col-md-3 col-12" style="margin-left: 10px;">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Despesas Compartilhadas</h5>
-                        <p class="card-text">R$ <span th:text="${totalSharedExpenses != null} ? ${totalSharedExpenses} : '0,00'"></span></p>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <div class="row g-4 mt-4" style="display: flex; justify-content: center; width: 100%;">
@@ -63,7 +55,7 @@
             <div class="col-md-5 col-12" style="margin-left: 10px;">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Despesas Mensais (Últimos 6 Meses)</h5>
+                        <h5 class="card-title">Despesas no mês por categoria</h5>
                         <div id="chart-monthly-spent"></div>
                     </div>
                 </div>
@@ -96,40 +88,46 @@
     </div>
 
     <script th:inline="javascript">
+        function isEmpty(obj) {
+            return Object.keys(obj).length === 0 || obj === null;
+        }
+        
         var expensesByCategory = /*[[${expensesByCategory}]]*/ {};
-        if (Object.keys(expensesByCategory).length > 0) {
-            var categoryData = Object.entries(expensesByCategory).map(([category, value]) => [category, value]);
+        if (!isEmpty(expensesByCategory)) {
+            var categoryData = Object.entries(expensesByCategory).map(([category, total]) => [category, total]);
+
             c3.generate({
                 bindto: '#chart-category',
                 data: {
                     columns: categoryData,
-                    type: 'pie'
+                    type: 'bar'
+                },
+                axis: {
+                    x: {
+                        type: 'category',
+                        categories: Object.keys(expensesByCategory)
+                    }
                 }
             });
         } else {
             document.getElementById('chart-category').innerHTML = '<p>Sem dados para exibir.</p>';
         }
 
-        var monthlyExpenses = /*[[${monthlyExpenses}]]*/ {};
-        if (Object.keys(monthlyExpenses).length > 0) {
-            var months = Object.keys(monthlyExpenses);
-            var values = Object.values(monthlyExpenses);
+        var currentMonthExpensesByCategory = /*[[${currentMonthExpensesByCategory}]]*/ {};
+        if (!isEmpty(currentMonthExpensesByCategory)) {
+            var categoryData = Object.entries(currentMonthExpensesByCategory).map(([category, total]) => [category, total]);
+
             c3.generate({
                 bindto: '#chart-monthly-spent',
                 data: {
-                    columns: [['Despesas', ...values]],
-                    type: 'line'
-                },
-                axis: {
-                    x: {
-                        type: 'category',
-                        categories: months
-                    }
+                    columns: categoryData,
+                    type: 'pie'
                 }
             });
         } else {
             document.getElementById('chart-monthly-spent').innerHTML = '<p>Sem dados para exibir.</p>';
         }
+
     </script>
 </body>
 </html>

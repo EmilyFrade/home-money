@@ -16,8 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -170,4 +175,19 @@ public class ExpenseService {
 
         return monthlyExpenses;
     }
+
+    public Map<String, BigDecimal> getCurrentMonthExpensesByCategory(User user) {
+    List<Object[]> results = expenseRepository.findCurrentMonthExpensesByCategory(user.getId());
+
+    Map<String, BigDecimal> currentMonthExpensesByCategory = new HashMap<>();
+
+    for (Object[] result : results) {
+        String category = (String) result[0];
+        BigDecimal total = (BigDecimal) result[1];
+
+        currentMonthExpensesByCategory.put(category, total);
+    }
+
+    return currentMonthExpensesByCategory;
+}
 }

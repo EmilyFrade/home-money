@@ -1,8 +1,11 @@
-
 package com.homemoney.controllers;
 
-import com.homemoney.repositories.expense.ExpenseRepository;
+import com.homemoney.model.expense.Expense;
+import com.homemoney.model.user.User;
+import com.homemoney.services.expense.ExpenseService;
+import com.homemoney.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,30 +19,30 @@ import java.util.Map;
 public class ReportController {
 
     @Autowired
-    private ExpenseRepository expenseRepository;
+    private ExpenseService expenseService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/report")
-    public String relatorio(Model model) {
+    public String relatorio(Model model, Authentication authentication) {
+        User currentUser = userService.findCurrentUserByUsername(authentication);
 
-        BigDecimal totalExpensesMonth = expenseRepository.findTotalExpensesMonth();
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        BigDecimal totalExpensesMonth = expenseService.calculateTotalExpensesThisMonth(currentUser);
         model.addAttribute("totalExpensesMonth", totalExpensesMonth != null ? totalExpensesMonth : BigDecimal.ZERO);
 
-        BigDecimal averageMonthlyExpense = expenseRepository.findAverageMonthlyExpense();
+        BigDecimal averageMonthlyExpense = expenseService.calculateAverageMonthlyExpense(currentUser);
         model.addAttribute("averageMonthlyExpense", averageMonthlyExpense != null ? averageMonthlyExpense : BigDecimal.ZERO);
 
-        List<Object[]> expensesByCategoryData = expenseRepository.findExpensesByCategory();
-        Map<String, BigDecimal> expensesByCategory = new HashMap<>();
-        for (Object[] data : expensesByCategoryData) {
-            expensesByCategory.put(data[0].toString(), (BigDecimal) data[1]);
-        }
+        Map<Expense.Category, BigDecimal> expensesByCategory = expenseService.getExpensesByCategory(currentUser);
         model.addAttribute("expensesByCategory", expensesByCategory);
 
-        List<Object[]> monthlyExpensesData = expenseRepository.findMonthlyExpensesLast6Months();
-        Map<String, BigDecimal> monthlyExpenses = new HashMap<>();
-        for (Object[] data : monthlyExpensesData) {
-            monthlyExpenses.put(data[0].toString(), (BigDecimal) data[1]);
-        }
-        model.addAttribute("monthlyExpenses", monthlyExpenses);
+        Map<String, BigDecimal> currentMonthExpensesByCategory = expenseService.getCurrentMonthExpensesByCategory(currentUser);
+        model.addAttribute("currentMonthExpensesByCategory", currentMonthExpensesByCategory);
 
         return "report";
     }

@@ -12,9 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.List;
 import java.math.BigDecimal;
-import org.springframework.web.bind.annotation.PostMapping;
 import java.util.stream.Collectors;
 
 @Controller
@@ -104,6 +104,32 @@ public class ExpenseController {
         return "expense/show";
     }
 
+    @GetMapping("/report")
+    public String showReport(Model model, Authentication authentication) {
+        User currentUser = userService.findCurrentUserByUsername(authentication);
+    
+        if (currentUser == null) {
+            return "redirect:/login"; 
+        }
+    
+        BigDecimal totalExpensesMonth = expenseService.calculateTotalExpensesThisMonth(currentUser);
+        BigDecimal averageMonthlyExpense = expenseService.calculateAverageMonthlyExpense(currentUser);
+        BigDecimal totalSharedExpenses = expenseService.calculateTotalSharedExpenses(currentUser);
+    
+        Map<Expense.Category, BigDecimal> expensesByCategory = expenseService.getExpensesByCategory(currentUser);
+        Map<String, BigDecimal> monthlyExpenses = expenseService.getMonthlyExpenses(currentUser);
+    
+        Map<String, BigDecimal> currentMonthExpensesByCategory = expenseService.getCurrentMonthExpensesByCategory(currentUser);
+    
+        model.addAttribute("totalExpensesMonth", totalExpensesMonth);
+        model.addAttribute("averageMonthlyExpense", averageMonthlyExpense);
+        model.addAttribute("totalSharedExpenses", totalSharedExpenses);
+        model.addAttribute("expensesByCategory", expensesByCategory);
+        model.addAttribute("monthlyExpenses", monthlyExpenses);
+        model.addAttribute("currentMonthExpensesByCategory", currentMonthExpensesByCategory); //erro
+    
+        return "report"; 
+  
     @PostMapping("/pay/{id}")
     public String payExpense(@PathVariable Long id, @RequestParam PaymentMethod paymentMethod) {
         expenseService.payExpense(id, paymentMethod);

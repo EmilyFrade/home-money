@@ -45,6 +45,7 @@ public class ExpenseController {
 
         model.addAttribute("myExpenses", myExpenses);
         model.addAttribute("sharedExpenses", sharedExpenses);
+        model.addAttribute("currentUser", currentUser);
 
         return "expense/list";
     }
@@ -95,9 +96,11 @@ public class ExpenseController {
     }
 
     @GetMapping("/show/{id}")
-    public String showExpense(@PathVariable Long id, Model model) {
+    public String showExpense(@PathVariable Long id, Model model, Authentication authentication) {
+        User currentUser = userService.findCurrentUserByUsername(authentication);
         Expense expense = expenseService.findById(id);
         model.addAttribute("expense", expense);
+        model.addAttribute("currentUser", currentUser);
         return "expense/show";
     }
 
@@ -126,5 +129,17 @@ public class ExpenseController {
         model.addAttribute("currentMonthExpensesByCategory", currentMonthExpensesByCategory); //erro
     
         return "report"; 
+  
+    @PostMapping("/pay/{id}")
+    public String payExpense(@PathVariable Long id, @RequestParam PaymentMethod paymentMethod) {
+        expenseService.payExpense(id, paymentMethod);
+        return "redirect:/expense";
+    }
+
+    @PostMapping("/reimburse/{id}")
+    public String reimburseExpense(@PathVariable Long id, @RequestParam PaymentMethod paymentMethod, Authentication authentication) {
+        User currentUser = userService.findCurrentUserByUsername(authentication);
+        expenseService.reimburseExpense(id, paymentMethod, currentUser);
+        return "redirect:/expense";
     }
 }

@@ -2,8 +2,10 @@ package com.homemoney.services.expense;
 
 import com.homemoney.model.expense.Expense;
 import com.homemoney.model.expense.ExpenseShare;
+import com.homemoney.model.expense.PaymentMethod;
 import com.homemoney.model.user.User;
 import com.homemoney.repositories.expense.ExpenseRepository;
+import com.homemoney.repositories.expense.ExpenseShareRepository;
 import com.homemoney.services.user.UserService;
 import com.homemoney.utils.DateUtils;
 
@@ -32,6 +34,9 @@ public class ExpenseService {
 
     @Autowired
     private ExpenseRepository expenseRepository;
+
+    @Autowired
+    private ExpenseShareRepository expenseShareRepository;
 
     @Autowired
     private UserService userService;
@@ -190,4 +195,27 @@ public class ExpenseService {
 
     return currentMonthExpensesByCategory;
 }
+    public void payExpense(Long id, PaymentMethod paymentMethod) {
+        Expense expense = findById(id);
+        expense.setPaymentMethod(paymentMethod);
+        expense.setStatus(Expense.Status.Paga);
+        expense.setPaymentDate(LocalDate.now());
+        expenseRepository.save(expense);
+
+        ExpenseShare share = expenseShareRepository.findByExpenseAndUser(expense, expense.getCreator());
+        share.setPaymentMethod(paymentMethod);
+        share.setStatus(ExpenseShare.Status.Pago);
+        expenseShareRepository.save(share);
+    }
+
+    public void reimburseExpense(Long id, PaymentMethod paymentMethod, User currentUser) {
+        Expense expense = findById(id);
+        for (ExpenseShare share : expense.getExpenseShares()) {
+            if (share.getUser().getId() == currentUser.getId()) {
+                share.setPaymentMethod(paymentMethod);
+                share.setStatus(ExpenseShare.Status.Reembolsado);
+            }
+        }
+        expenseRepository.save(expense);
+    }
 }

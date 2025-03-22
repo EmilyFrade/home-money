@@ -96,13 +96,16 @@
                     </div>
                     <div class="card-body">
                         <form th:action="@{${budget.id} != null ? '/budget/edit/' + ${budget.id} : '/budget'}" th:object="${budget}" method="post">
-
+                            <!-- Campos ocultos para creator e residence -->
+                            <input type="hidden" th:field="*{creator.id}" />
+                            <input type="hidden" th:field="*{residence.id}" />
+                        
                             <!-- Campo Valor -->
                             <div class="mb-3">
                                 <label for="value" class="form-label">Valor:</label>
                                 <input type="number" class="form-control" th:field="*{value}" step="0.01" required min="0.01" />
                             </div>
-
+                        
                             <!-- Campo Categoria -->
                             <div class="mb-3">
                                 <label for="category" class="form-label">Categoria:</label>
@@ -110,7 +113,7 @@
                                     <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
                                 </select>
                             </div>
-
+                        
                             <!-- Campos de Data (Início e Fim) -->
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -122,7 +125,7 @@
                                     <input type="date" class="form-control" th:field="*{endDate}" required />
                                 </div>
                             </div>
-
+                        
                             <!-- Botão Salvar -->
                             <button type="submit" class="btn btn-success w-100">Salvar</button>
                         </form>
